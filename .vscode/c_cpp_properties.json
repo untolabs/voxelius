@@ -1,0 +1,22 @@
+{
+    "version": 4,
+    "configurations": [
+        {
+            "name": "Voxelius",
+            "cppStandard": "c++17",
+            "cStandard": "c99",
+            "defines": [
+                "NOMINMAX", "_CRT_SECURE_NO_WARNINGS", "_USE_MATH_DEFINES",
+                "GLFW_INCLUDE_NONE",
+                "MINIZ_NO_STDIO", "MINIZ_NO_ZLIB_COMPATIBLE_NAMES",
+                "LAUNCH_CLIENT", "LAUNCH_SERVER"
+            ],
+            "includePath": [
+                "${workspaceFolder}/external/include",
+                "${workspaceFolder}/source/game",
+                "${workspaceFolder}/source",
+                "${default}"
+            ]
+        }
+    ]
+}

@@ -1,0 +1,9 @@
+[[actions]]
+name = "Play"
+path = "vclient.exe"
+platform = "windows"
+
+[[actions]]
+name = "Play"
+path = "vclient"
+platform = "linux"

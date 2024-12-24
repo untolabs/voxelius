@@ -1,0 +1,34 @@
+set(EXTERNAL_INCLUDE_DIR "${CMAKE_CURRENT_LIST_DIR}/include")
+set(EXTERNAL_LIBRARY_DIR "${CMAKE_CURRENT_LIST_DIR}/libraries")
+
+if(WIN32)
+    set(EXTERNAL_LIBRARY_DIR "${EXTERNAL_LIBRARY_DIR}/win")
+elseif(UNIX AND NOT APPLE)
+    set(EXTERNAL_LIBRARY_DIR "${EXTERNAL_LIBRARY_DIR}/linux")
+else()
+    message(FATAL_ERROR "Unsupported and/or uncovered platform")
+endif()
+
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(EXTERNAL_LIBRARY_DIR "${EXTERNAL_LIBRARY_DIR}64")
+else()
+    set(EXTERNAL_LIBRARY_DIR "${EXTERNAL_LIBRARY_DIR}32")
+endif()
+
+set(PHYSFS_ARCHIVE_ZIP ON CACHE BOOL "" FORCE)
+set(PHYSFS_ARCHIVE_7Z ON CACHE BOOL "" FORCE)
+
+add_subdirectory(source/enet)
+add_subdirectory(source/fastnoiselite)
+add_subdirectory(source/glad)
+add_subdirectory(source/imgui)
+add_subdirectory(source/miniz)
+add_subdirectory(source/parson)
+add_subdirectory(source/physfs)
+add_subdirectory(source/spdlog)
+add_subdirectory(source/stb)
+
+set(EXTERNAL_INCLUDE_DIR "${EXTERNAL_INCLUDE_DIR}" PARENT_SCOPE)
+set(EXTERNAL_LIBRARY_DIR "${EXTERNAL_LIBRARY_DIR}" PARENT_SCOPE)
+
+install(FILES "${CMAKE_CURRENT_LIST_DIR}/LEGAL_NOTICES.txt" DESTINATION ".")
