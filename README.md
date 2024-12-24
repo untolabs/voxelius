@@ -1,4 +1,4 @@
-![](https://github.com/user-attachments/assets/e9db6d1e-411a-457d-b069-be41099d696c)  
+![](https://github.com/user-attachments/assets/70c289e1-3de9-4746-aaac-f8f2e8852b81)  
 
 [![Itch.io](https://img.shields.io/badge/itch.io-%23FF0B34.svg?style=for-the-badge&logo=Itch.io&logoColor=white)](https://untodesu.itch.io/voxelius)
 [![GitHub Repo stars](https://img.shields.io/github/stars/untolabs/voxelius?style=for-the-badge)](https://github.com/untolabs/voxelius/stargazers)
@@ -8,8 +8,8 @@
 
 Voxelius is an in-development open-source voxel game with the sole goal to replicate and improve the atmosphere of Minecraft Beta 1.7.3 using modern development tools and practices.  
 
-![](https://github.com/user-attachments/assets/48e435ab-58ee-4736-8948-9d56899fb687)  
-![](https://github.com/user-attachments/assets/6c76c4ad-2c37-439a-a5b3-1052f99ce949)  
-![](https://github.com/user-attachments/assets/877427a7-8af3-4573-9881-de4e0b33de6d)
+![](https://github.com/user-attachments/assets/922fc0d9-beab-4f90-8661-dd838651a732)  
+![](https://github.com/user-attachments/assets/57a0c6df-1f96-4b10-852a-563a7797b53f)  
+![](https://github.com/user-attachments/assets/60cc130d-0887-441e-800c-1f0a90549193)  
 
 The game is in very early development but already features things like working multiplayer and semi-decent world generation engine. However, it still lacks some core gameplay features such as gravity, collision detection and player models.  
