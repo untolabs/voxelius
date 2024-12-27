@@ -4,6 +4,8 @@
 
 #include "mathlib/constexpr.hh"
 
+#include "shared/entity/gravity.hh"
+#include "shared/entity/grounded.hh"
 #include "shared/entity/head.hh"
 #include "shared/entity/transform.hh"
 #include "shared/entity/velocity.hh"
@@ -54,9 +56,11 @@ void player_move::update(void)
         velocity.linear[2] = cxpr::lerp(velocity.linear[2], 0.0f, PLAYER_DECELERATE);
     }
 
-    if(wishdir[1])
-        velocity.linear[1] = cxpr::lerp(velocity.linear[1], wishdir[1] * PLAYER_MOVE_SPEED, PLAYER_ACCELERATE);
-    else velocity.linear[1] = cxpr::lerp(velocity.linear[1], 0.0f, PLAYER_DECELERATE);
+    if(wishdir[1]) {
+        if(globals::registry.any_of<GroundedComponent>(globals::player)) {
+            velocity.linear[1] = GravityComponent::acceleration * 0.5f;
+        }
+    }
 }
 
 void player_move::set_direction(const Vec3f &direction)

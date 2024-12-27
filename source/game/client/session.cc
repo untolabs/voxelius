@@ -6,6 +6,7 @@
 #include "common/crc64.hh"
 
 #include "shared/entity/head.hh"
+#include "shared/entity/hull.hh"
 #include "shared/entity/player.hh"
 #include "shared/entity/transform.hh"
 #include "shared/entity/velocity.hh"
@@ -23,6 +24,7 @@
 
 #include "shared/worldgen/worldgen.hh"
 
+#include "shared/factory.hh"
 #include "shared/protocol.hh"
 
 #include "client/gui/chat.hh"
@@ -309,10 +311,7 @@ void session::sp::load_world(const std::string &universe_directory)
     unloader::init_late(view::max_distance);
 
     globals::player = globals::registry.create();
-    globals::registry.emplace<HeadComponent>(globals::player);
-    globals::registry.emplace<PlayerComponent>(globals::player);
-    globals::registry.emplace<TransformComponent>(globals::player);
-    globals::registry.emplace<VelocityComponent>(globals::player);
+    factory::create_player(globals::player);
 
     globals::gui_screen = GUI_SCREEN_NONE;
 }

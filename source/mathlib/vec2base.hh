@@ -13,12 +13,12 @@ public:
     using std::array<T, 2>::array;
 
 public:
-    constexpr inline float get_x(void) const { return this[0][0]; }
-    constexpr inline float get_y(void) const { return this[0][1]; }
+    constexpr inline T get_x(void) const { return this[0][0]; }
+    constexpr inline T get_y(void) const { return this[0][1]; }
 
 public:
-    constexpr inline void set_x(float value) { this[0][0] = value; }
-    constexpr inline void set_y(float value) { this[0][1] = value; }
+    constexpr inline void set_x(T value) { this[0][0] = value; }
+    constexpr inline void set_y(T value) { this[0][1] = value; }
 
 public:
     constexpr Vec2base<T> operator+(const Vec2base<T> &vector) const;

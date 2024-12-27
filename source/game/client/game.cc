@@ -12,6 +12,8 @@
 #include "common/epoch.hh"
 #include "common/fstools.hh"
 
+#include "shared/entity/gravity.hh"
+#include "shared/entity/hull.hh"
 #include "shared/entity/transform.hh"
 #include "shared/entity/velocity.hh"
 
@@ -424,11 +426,22 @@ void client_game::update(void)
     experiments::update();
 #endif /* ENABLE_EXPERIMENTS */
 
+#if ENABLE_EXPERIMENTS
+    if(globals::registry.valid(globals::player)) {
+        auto &velocity = globals::registry.get<VelocityComponent>(globals::player);
+        velocity.linear[1] -= globals::frametime * 30.0f;
+    }
+#endif
+
     player_move::update();
     player_target::update();
 
+    HullComponent::update();
+
     VelocityComponent::update();
     TransformComponent::update();
+
+    GravityComponent::update();
 
     view::update();
 
@@ -526,6 +539,18 @@ void client_game::render(void)
             outline::line(wpos, forward);
         }
     }
+
+    const auto group2 = globals::registry.group(entt::get<HullComponent, TransformComponent>);
+
+    for(const auto [entity, hull, transform] : group2.each()) {
+        glEnable(GL_DEPTH_TEST);
+
+        WorldCoord wpos_a = transform.position;
+        wpos_a.local += hull.local_box.min;
+
+        outline::cube(wpos_a, hull.local_box.max - hull.local_box.min);
+    }
+
 
 #endif /* ENABLE_EXPERIMENTS */
 

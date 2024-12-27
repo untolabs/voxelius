@@ -3,12 +3,14 @@
 #include "client/receive.hh"
 
 #include "shared/entity/head.hh"
+#include "shared/entity/hull.hh"
 #include "shared/entity/player.hh"
 #include "shared/entity/transform.hh"
 #include "shared/entity/velocity.hh"
 
 #include "shared/world/world.hh"
 
+#include "shared/factory.hh"
 #include "shared/protocol.hh"
 
 #include "client/gui/chat.hh"
@@ -92,7 +94,7 @@ static void on_entity_player_packet(const protocol::EntityPlayer &packet)
     if(globals::session_peer) {
         if(!globals::registry.valid(packet.entity))
             static_cast<void>(globals::registry.create(packet.entity));
-        globals::registry.emplace_or_replace<PlayerComponent>(packet.entity);
+        factory::create_player(packet.entity);
     }
 }
 
@@ -101,7 +103,7 @@ static void on_spawn_player_packet(const protocol::SpawnPlayer &packet)
     if(globals::session_peer) {
         if(!globals::registry.valid(packet.entity)) {
             static_cast<void>(globals::registry.create(packet.entity));
-            globals::registry.emplace_or_replace<PlayerComponent>(packet.entity);
+            factory::create_player(packet.entity);
         }
 
         globals::player = packet.entity;

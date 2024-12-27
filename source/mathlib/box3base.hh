@@ -17,6 +17,8 @@ public:
 
     constexpr static Box3base<T> combine(const Box3base<T> &abox, const Box3base<T> &bbox);
     constexpr static Box3base<T> multiply(const Box3base<T> &abox, const Box3base<T> &bbox);
+
+    constexpr static Box3base<T> push(const Box3base<T> &box, const Vec3base<T> &vector);
 };
 
 template<typename T>
@@ -52,11 +54,11 @@ constexpr bool Box3base<T>::contains(const Box3base<T> &box, const Vec3base<T> &
 template<typename T>
 constexpr bool Box3base<T>::intersect(const Box3base<T> &abox, const Box3base<T> &bbox)
 {
-    if((abox.min[0] > bbox.max[0]) || (abox.max[0] < bbox.min[0]))
+    if((abox.min[0] >= bbox.max[0]) || (abox.max[0] <= bbox.min[0]))
         return false;
-    if((abox.min[1] > bbox.max[1]) || (abox.max[1] < bbox.min[1]))
+    if((abox.min[1] >= bbox.max[1]) || (abox.max[1] <= bbox.min[1]))
         return false;
-    if((abox.min[2] > bbox.max[2]) || (abox.max[2] < bbox.min[2]))
+    if((abox.min[2] >= bbox.max[2]) || (abox.max[2] <= bbox.min[2]))
         return false;
     return true;
 }
@@ -76,5 +78,14 @@ constexpr Box3base<T> Box3base<T>::multiply(const Box3base<T> &abox, const Box3b
     Box3base<T> result;
     result.min = bbox.min;
     result.max = abox.max;
+    return std::move(result);
+}
+
+template<typename T>
+constexpr Box3base<T> Box3base<T>::push(const Box3base<T> &box, const Vec3base<T> &vector)
+{
+    Box3base<T> result;
+    result.min = box.min + vector;
+    result.max = box.max + vector;
     return std::move(result);
 }
