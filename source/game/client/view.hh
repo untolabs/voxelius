@@ -6,6 +6,7 @@
 
 namespace view
 {
+extern float roll_angle;
 extern float vertical_fov;
 extern unsigned int max_distance;
 } // namespace view
