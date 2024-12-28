@@ -12,8 +12,8 @@
 #include "common/epoch.hh"
 #include "common/fstools.hh"
 
+#include "shared/entity/collision.hh"
 #include "shared/entity/gravity.hh"
-#include "shared/entity/hull.hh"
 #include "shared/entity/transform.hh"
 #include "shared/entity/velocity.hh"
 
@@ -437,7 +437,7 @@ void client_game::update(void)
     player_target::update();
 
     if(globals::registry.valid(globals::player)) {
-        HullComponent::update();
+        CollisionComponent::update();
 
         VelocityComponent::update();
         TransformComponent::update();
@@ -518,44 +518,32 @@ void client_game::render(void)
     player_target::render();
 
 #if ENABLE_EXPERIMENTS
-
-    const auto group = globals::registry.group(entt::get<PlayerComponent, HeadComponent, TransformComponent>);
+    const auto group = globals::registry.group(entt::get<PlayerComponent, CollisionComponent, HeadComponent, TransformComponent>);
 
     outline::prepare();
 
-    for(const auto [entity, head, transform] : group.each()) {
-        if(entity != globals::player) {
-            WorldCoord wpos = transform.position;
-            wpos.local += head.offset;
+    glEnable(GL_DEPTH_TEST);
 
-            WorldCoord wpos_cube = wpos;
-            wpos_cube.local -= 0.5f;
-
-            Vec3f forward = {};
-            Vec3angles::vectors(head.angles + transform.angles, &forward, nullptr, nullptr);
-            forward *= 2.0f;
-
-            glEnable(GL_DEPTH_TEST);
-
-            outline::cube(wpos_cube, Vec3f(1.0f));
-            outline::line(wpos, forward);
+    for(const auto [entity, collision, head, transform] : group.each()) {
+        if(entity == globals::player) {
+            // Don't render ourselves
+            continue;
         }
+
+        Vec3f forward;
+        Vec3angles::vectors(transform.angles + head.angles, forward);
+        forward *= 2.0f;
+
+        Vec3f hull_size = collision.hull.max - collision.hull.min;
+        WorldCoord hull = transform.position;
+        hull.local += collision.hull.min;
+
+        WorldCoord look = transform.position;
+        look.local += head.offset;
+
+        outline::cube(hull, hull_size, 2.0f, Vec4f::red());
+        outline::line(look, forward, 2.0f, Vec4f::light_gray());
     }
-
-    const auto group2 = globals::registry.group(entt::get<HullComponent, TransformComponent>);
-
-    for(const auto [entity, hull, transform] : group2.each()) {
-        if(entity != globals::player) {
-            glEnable(GL_DEPTH_TEST);
-
-            WorldCoord wpos_a = transform.position;
-            wpos_a.local += hull.local_box.min;
-
-            outline::cube(wpos_a, hull.local_box.max - hull.local_box.min);
-        }
-    }
-
-
 #endif /* ENABLE_EXPERIMENTS */
 
     glViewport(0, 0, globals::width, globals::height);

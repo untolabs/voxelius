@@ -1,10 +1,10 @@
 add_library(shared STATIC
     "${CMAKE_CURRENT_LIST_DIR}/entity/chunk.hh"
+    "${CMAKE_CURRENT_LIST_DIR}/entity/collision.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/entity/collision.hh"
     "${CMAKE_CURRENT_LIST_DIR}/entity/gravity.cc"
     "${CMAKE_CURRENT_LIST_DIR}/entity/gravity.hh"
     "${CMAKE_CURRENT_LIST_DIR}/entity/head.hh"
-    "${CMAKE_CURRENT_LIST_DIR}/entity/hull.cc"
-    "${CMAKE_CURRENT_LIST_DIR}/entity/hull.hh"
     "${CMAKE_CURRENT_LIST_DIR}/entity/player.hh"
     "${CMAKE_CURRENT_LIST_DIR}/entity/transform.cc"
     "${CMAKE_CURRENT_LIST_DIR}/entity/transform.hh"

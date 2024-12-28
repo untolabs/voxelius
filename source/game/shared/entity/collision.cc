@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-2-Clause
 #include "shared/precompiled.hh"
-#include "shared/entity/hull.hh"
+#include "shared/entity/collision.hh"
 
 #include "shared/entity/gravity.hh"
 #include "shared/entity/grounded.hh"
@@ -14,13 +14,13 @@
 #include "shared/globals.hh"
 
 
-static int grid_collide(int d, HullComponent &hull, TransformComponent &transform, VelocityComponent &velocity)
+static int grid_collide(int d, CollisionComponent &collision, TransformComponent &transform, VelocityComponent &velocity)
 {
     const float move = globals::frametime * velocity.linear[d];
 
     // The template-coordinated bounding box for the
     // collision hull of an entity (most likely the player)
-    const auto &box = hull.local_box;
+    const auto &box = collision.hull;
 
     // The bounding box that we have moved
     // into position to check for voxels inside it
@@ -98,7 +98,7 @@ static int grid_collide(int d, HullComponent &hull, TransformComponent &transfor
     return 0;
 }
 
-void HullComponent::update(void)
+void CollisionComponent::update(void)
 {
     // FIXME: this isn't particularly accurate considering
     // some voxels might be passable and some other voxels
@@ -109,14 +109,14 @@ void HullComponent::update(void)
     // we shouldn't treat all voxels as full cubes if we want
     // to support slabs, stairs and non-full liquid voxels in the future
 
-    auto group = globals::registry.group<HullComponent>(entt::get<TransformComponent, VelocityComponent>);
+    auto group = globals::registry.group<CollisionComponent>(entt::get<TransformComponent, VelocityComponent>);
 
-    for(auto [entity, hull, transform, velocity] : group.each()) {
-        if(grid_collide(1, hull, transform, velocity) == (-cxpr::sign<int>(GravityComponent::acceleration)))
+    for(auto [entity, collision, transform, velocity] : group.each()) {
+        if(grid_collide(1, collision, transform, velocity) == (-cxpr::sign<int>(GravityComponent::acceleration)))
             globals::registry.emplace_or_replace<GroundedComponent>(entity);
         else globals::registry.remove<GroundedComponent>(entity);
 
-        grid_collide(0, hull, transform, velocity);
-        grid_collide(2, hull, transform, velocity);
+        grid_collide(0, collision, transform, velocity);
+        grid_collide(2, collision, transform, velocity);
     }
 }

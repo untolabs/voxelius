@@ -6,7 +6,6 @@
 #include "common/crc64.hh"
 
 #include "shared/entity/head.hh"
-#include "shared/entity/hull.hh"
 #include "shared/entity/player.hh"
 #include "shared/entity/transform.hh"
 #include "shared/entity/velocity.hh"
