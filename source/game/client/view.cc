@@ -4,6 +4,8 @@
 
 #include "common/config.hh"
 
+#include "client/entity/player_move.hh"
+
 #include "client/gui/settings.hh"
 
 #include "client/globals.hh"
@@ -64,7 +66,7 @@ void view::update(void)
 
     auto patch_angles = view::angles;
     const auto &velocity = globals::registry.get<VelocityComponent>(globals::player);
-    const auto roll = view::roll_angle * Vec3f::dot(velocity.linear / 8.0f, right_vector);
+    const auto roll = view::roll_angle * Vec3f::dot(velocity.linear / PMOVE_MAX_SPEED_GROUND, right_vector);
     patch_angles[2] = cxpr::radians(-roll);
 
     const auto z_near = 0.01f;

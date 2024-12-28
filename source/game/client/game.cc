@@ -543,12 +543,14 @@ void client_game::render(void)
     const auto group2 = globals::registry.group(entt::get<HullComponent, TransformComponent>);
 
     for(const auto [entity, hull, transform] : group2.each()) {
-        glEnable(GL_DEPTH_TEST);
+        if(entity != globals::player) {
+            glEnable(GL_DEPTH_TEST);
 
-        WorldCoord wpos_a = transform.position;
-        wpos_a.local += hull.local_box.min;
+            WorldCoord wpos_a = transform.position;
+            wpos_a.local += hull.local_box.min;
 
-        outline::cube(wpos_a, hull.local_box.max - hull.local_box.min);
+            outline::cube(wpos_a, hull.local_box.max - hull.local_box.min);
+        }
     }
 
 

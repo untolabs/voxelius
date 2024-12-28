@@ -15,15 +15,45 @@
 #include "client/globals.hh"
 
 
-constexpr static float PLAYER_MOVE_SPEED = 16.0f;
-constexpr static float PLAYER_ACCELERATE = 0.05f;
-constexpr static float PLAYER_DECELERATE = 0.15f;
+static Vec3f pmove_wish_dir = Vec3f::zero();
 
-static Vec3f wishdir = {};
+static Vec3f accelerate(const Vec3f &wish_dir, const Vec3f &velocity, float wish_speed, float accel)
+{
+    const auto current_speed = Vec3f::dot(velocity, wish_dir);
+    const auto add_speed = wish_speed - current_speed;
+
+    if(add_speed <= 0.0f) {
+        // Not accelerating
+        return velocity;
+    }
+
+    const auto accel_speed = cxpr::min(add_speed, accel * globals::frametime * wish_speed);
+
+    auto result = Vec3f(velocity);
+    result[0] += accel_speed * wish_dir[0];
+    result[2] += accel_speed * wish_dir[2];
+    return std::move(result);
+}
+
+static Vec3f air_move(const Vec3f &wish_dir, const Vec3f &velocity)
+{
+    return accelerate(wish_dir, velocity, PMOVE_ACCELERATION_AIR, PMOVE_MAX_SPEED_AIR);
+}
+
+static Vec3f ground_move(const Vec3f &wish_dir, const Vec3f &velocity)
+{
+    if(const auto speed = Vec3f::length(velocity)) {
+        const auto speed_drop = speed * PMOVE_FRICTION_GROUND * globals::frametime;
+        const auto speed_factor = cxpr::max(speed - speed_drop, 0.0f) / speed;
+        return accelerate(wish_dir, velocity * speed_factor, PMOVE_ACCELERATION_GROUND, PMOVE_MAX_SPEED_GROUND);
+    }
+
+    return accelerate(wish_dir, velocity, PMOVE_ACCELERATION_GROUND, PMOVE_MAX_SPEED_GROUND);
+}
 
 void player_move::init(void)
 {
-    wishdir = Vec3f(0.0f, 0.0f, 0.0f);
+    pmove_wish_dir = Vec3f::zero();
 }
 
 void player_move::update(void)
@@ -31,39 +61,48 @@ void player_move::update(void)
     if(!globals::registry.valid(globals::player)) {
         // There's no point in updating movement
         // while we're not loaded into a world
-        wishdir = Vec3f(0.0f, 0.0f, 0.0f);
+        pmove_wish_dir = Vec3f::zero();
         return;
     }
 
     if(globals::gui_screen) {
         // UI is active - player movement should not
         // update; we at least want to decelerate
-        wishdir = Vec3f(0.0f, 0.0f, 0.0f);
+        pmove_wish_dir = Vec3f::zero();
     }
 
     const auto &head = globals::registry.get<HeadComponent>(globals::player);
     auto &transform = globals::registry.get<TransformComponent>(globals::player);
     auto &velocity = globals::registry.get<VelocityComponent>(globals::player);
 
-    if(wishdir[0] || wishdir[2]) {
-        Vec3f forward, right;
-        Vec3angles::vectors(Vec3angles(0.0f, head.angles[1], 0.0f), &forward, &right, nullptr);
-        velocity.linear[0] = cxpr::lerp(velocity.linear[0], Vec3f::dot(right, wishdir) * PLAYER_MOVE_SPEED, PLAYER_ACCELERATE);
-        velocity.linear[2] = cxpr::lerp(velocity.linear[2], Vec3f::dot(forward, wishdir) * PLAYER_MOVE_SPEED, PLAYER_ACCELERATE);
+    Vec3f forward, right;
+    Vec3angles::vectors(Vec3angles(0.0f, head.angles[1], 0.0f), &forward, &right, nullptr);
+
+    Vec3f wish_dir = Vec3f::zero();
+    Vec3f move_vars_xz = Vec3f(pmove_wish_dir.get_x(), 0.0f, pmove_wish_dir.get_z());
+    wish_dir.set_x(Vec3f::dot(move_vars_xz, right));
+    wish_dir.set_z(Vec3f::dot(move_vars_xz, forward));
+
+    const auto is_grounded = globals::registry.any_of<GroundedComponent>(globals::player);
+    const auto velocity_xz = Vec3f(velocity.linear.get_x(), 0.0f, velocity.linear.get_z());
+
+    if(is_grounded) {
+        const auto xz = ground_move(wish_dir, velocity_xz);
+        velocity.linear.set_x(xz.get_x());
+        velocity.linear.set_z(xz.get_z());
     }
     else {
-        velocity.linear[0] = cxpr::lerp(velocity.linear[0], 0.0f, PLAYER_DECELERATE);
-        velocity.linear[2] = cxpr::lerp(velocity.linear[2], 0.0f, PLAYER_DECELERATE);
+        const auto xz = air_move(wish_dir, velocity_xz);
+        velocity.linear.set_x(xz.get_x());
+        velocity.linear.set_z(xz.get_z());
     }
 
-    if(wishdir[1]) {
-        if(globals::registry.any_of<GroundedComponent>(globals::player)) {
-            velocity.linear[1] = GravityComponent::acceleration * 0.5f;
-        }
+    if(is_grounded && (pmove_wish_dir.get_y() > 0.0f)) {
+        velocity.linear[1] = GravityComponent::acceleration * 0.4f;
     }
 }
 
-void player_move::set_direction(const Vec3f &direction)
+void player_move::set_direction(const Vec3f &wish_dir)
 {
-    wishdir = direction;
+    pmove_wish_dir = wish_dir;
 }

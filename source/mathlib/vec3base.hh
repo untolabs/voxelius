@@ -18,9 +18,9 @@ public:
     constexpr inline T get_z(void) const { return this[0][2]; }
 
 public:
-    constexpr inline T set_x(T value) { this[0][0] = value; }
-    constexpr inline T set_y(T value) { this[0][1] = value; }
-    constexpr inline T set_z(T value) { this[0][2] = value; }
+    constexpr inline void set_x(T value) { this[0][0] = value; }
+    constexpr inline void set_y(T value) { this[0][1] = value; }
+    constexpr inline void set_z(T value) { this[0][2] = value; }
 
 public:
     constexpr Vec3base<T> operator+(const Vec3base<T> &vector) const;
@@ -51,6 +51,9 @@ public:
     constexpr static Vec3base<T> dir_south(void);
     constexpr static Vec3base<T> dir_east(void);
     constexpr static Vec3base<T> dir_west(void);
+
+public:
+    constexpr static Vec3base<T> zero(void);
 };
 
 template<typename T>
@@ -247,4 +250,10 @@ template<typename T>
 constexpr inline Vec3base<T> Vec3base<T>::dir_west(void)
 {
     return std::move(Vec3base<T>::dir_left());
+}
+
+template<typename T>
+constexpr inline Vec3base<T> Vec3base<T>::zero(void)
+{
+    return std::move(Vec3base<T>(T(0), T(0), T(0)));
 }

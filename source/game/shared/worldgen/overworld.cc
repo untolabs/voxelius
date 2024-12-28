@@ -236,7 +236,7 @@ bool worldgen::overworld::generate(const ChunkCoord &cpos, VoxelStorage &voxels)
     generate_terrain(cpos, voxels);
     generate_surface(cpos, voxels);
     generate_carvers(cpos, voxels);
-    generate_features(cpos, voxels);
+    //generate_features(cpos, voxels);
 
     return true;
 }

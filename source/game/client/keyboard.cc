@@ -50,6 +50,7 @@ static void update_key_bits(unsigned int key_bit, int action)
         pressed_key_bits &= ~key_bit;
     }
     
+    
     Vec3f new_wishdir = Vec3f(0.0f, 0.0f, 0.0f);
     
     if(pressed_key_bits & KEY_BIT_FORWARD)
@@ -79,7 +80,7 @@ static void on_glfw_key(const GlfwKeyEvent &event)
         // We shouldn't bother with key events
         // that happen whilst GUI is visible
         pressed_key_bits = KEY_BIT_NULL;
-        player_move::set_direction(Vec3f());
+        player_move::set_direction(Vec3f::zero());
         return;
     }
 

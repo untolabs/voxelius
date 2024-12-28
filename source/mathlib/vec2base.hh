@@ -35,6 +35,9 @@ public:
     constexpr Vec2base<T> &operator-=(const T scalar);
     constexpr Vec2base<T> &operator*=(const T scalar);
     constexpr Vec2base<T> &operator/=(const T scalar);
+
+public:
+    constexpr static Vec2base<T> zero(void);
 };
 
 template<typename T>
@@ -156,4 +159,10 @@ constexpr inline Vec2base<T> &Vec2base<T>::operator/=(const T scalar)
     this[0][0] /= scalar;
     this[0][1] /= scalar;
     return this[0];
+}
+
+template<typename T>
+constexpr inline Vec2base<T> Vec2base<T>::zero(void)
+{
+    return std::move(Vec2base<T>(T(0), T(0)));
 }
