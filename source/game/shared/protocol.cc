@@ -8,6 +8,7 @@
 
 #include "shared/entity/chunk.hh"
 #include "shared/entity/head.hh"
+#include "shared/entity/player.hh"
 #include "shared/entity/transform.hh"
 #include "shared/entity/velocity.hh"
 
@@ -450,9 +451,11 @@ void protocol::send_entity_velocity(ENetPeer *peer, ENetHost *host, entt::entity
 
 void protocol::send_entity_player(ENetPeer *peer, ENetHost *host, entt::entity entity)
 {
-    protocol::EntityPlayer packet = {};
-    packet.entity = entity;
-    protocol::send(peer, host, packet);
+    if(globals::registry.any_of<PlayerComponent>(entity)) {
+        protocol::EntityPlayer packet = {};
+        packet.entity = entity;
+        protocol::send(peer, host, packet);
+    }
 }
 
 void protocol::send_spawn_player(ENetPeer *peer, ENetHost *host, entt::entity entity)

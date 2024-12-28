@@ -436,12 +436,14 @@ void client_game::update(void)
     player_move::update();
     player_target::update();
 
-    HullComponent::update();
+    if(globals::registry.valid(globals::player)) {
+        HullComponent::update();
 
-    VelocityComponent::update();
-    TransformComponent::update();
+        VelocityComponent::update();
+        TransformComponent::update();
 
-    GravityComponent::update();
+        GravityComponent::update();
+    }
 
     view::update();
 
