@@ -98,7 +98,7 @@ void player_move::update(void)
     }
 
     if(is_grounded && (pmove_wish_dir.get_y() > 0.0f)) {
-        velocity.linear[1] = GravityComponent::acceleration * 0.4f;
+        velocity.linear[1] = GravityComponent::acceleration;
     }
 }
 
