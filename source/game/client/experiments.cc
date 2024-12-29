@@ -33,6 +33,12 @@ static void on_glfw_mouse_button(const GlfwMouseButtonEvent &event)
                     world::set_voxel(hotbar::slots[hotbar::active_slot], player_target::vvec + player_target::vnormal);
                 return;
             }
+
+            if(event.button == GLFW_MOUSE_BUTTON_MIDDLE) {
+                if(player_target::voxel != NULL_VOXEL)
+                    hotbar::slots[hotbar::active_slot] = player_target::voxel;
+                return;
+            }
         }
     }
 }
@@ -49,9 +55,9 @@ void experiments::init_late(void)
     hotbar::slots[2] = game_voxels::grass;
     hotbar::slots[3] = game_voxels::stone;
     hotbar::slots[4] = game_voxels::vtest;
-    hotbar::slots[5] = game_voxels::oak_leaves;
-    hotbar::slots[6] = game_voxels::oak_planks;
-    hotbar::slots[7] = game_voxels::oak_log;
+    hotbar::slots[5] = game_voxels::slime;
+    hotbar::slots[6] = game_voxels::superslime;
+    hotbar::slots[7] = game_voxels::mud;
     hotbar::slots[8] = game_voxels::glass;
 }
 

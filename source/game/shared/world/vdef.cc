@@ -16,6 +16,8 @@ VoxelInfoBuilder::VoxelInfoBuilder(const std::string &name, VoxelType type, bool
     prototype.type = type;
     prototype.animated = animated;
     prototype.blending = blending;
+    prototype.touch_type = TOUCH_SOLID;
+    prototype.touch_coeffs = Vec3f(0.0f, 0.0f, 0.0f);
 
     switch(type) {
         case VoxelType::Cube:
@@ -53,6 +55,13 @@ VoxelInfoBuilder &VoxelInfoBuilder::add_texture(VoxelFace face, const std::strin
 {
     const auto index = static_cast<std::size_t>(face);
     prototype.textures[index].paths.push_back(texture);
+    return *this;
+}
+
+VoxelInfoBuilder &VoxelInfoBuilder::set_touch(VoxelTouch type, const Vec3f &coeffs)
+{
+    prototype.touch_type = type;
+    prototype.touch_coeffs = coeffs;
     return *this;
 }
 
@@ -98,6 +107,8 @@ VoxelID VoxelInfoBuilder::build(void) const
     new_info->type = prototype.type;
     new_info->animated = prototype.animated;
     new_info->blending = prototype.blending;
+    new_info->touch_type = prototype.touch_type;
+    new_info->touch_coeffs = prototype.touch_coeffs;
     new_info->textures.resize(prototype.textures.size());
     new_info->base = vdef::voxels.size() + 1;
 

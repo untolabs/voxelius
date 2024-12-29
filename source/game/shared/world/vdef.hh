@@ -1,4 +1,5 @@
 #pragma once
+#include "mathlib/vec3f.hh"
 #include "shared/world/voxel_id.hh"
 
 enum class VoxelFace : unsigned int {
@@ -58,6 +59,12 @@ constexpr static VoxelVis VIS_WEST  = 1 << FACING_WEST;
 constexpr static VoxelVis VIS_UP    = 1 << FACING_UP;
 constexpr static VoxelVis VIS_DOWN  = 1 << FACING_DOWN;
 
+using VoxelTouch = unsigned short;
+constexpr static VoxelTouch TOUCH_SOLID     = 0x0000;
+constexpr static VoxelTouch TOUCH_BOUNCE    = 0x0001;
+constexpr static VoxelTouch TOUCH_SINK      = 0x0002;
+constexpr static VoxelTouch TOUCH_NOTHING   = 0xFFFF;
+
 struct VoxelTexture final {
     std::vector<std::string> paths {};
     std::size_t cached_offset {};
@@ -66,6 +73,8 @@ struct VoxelTexture final {
 
 struct VoxelInfo final {
     std::vector<VoxelTexture> textures {};
+    VoxelTouch touch_type {};
+    Vec3f touch_coeffs {};
     std::string name {};
     VoxelType type {};
     bool animated {};
@@ -81,6 +90,7 @@ public:
 public:
     VoxelInfoBuilder &add_texture_default(const std::string &texture);
     VoxelInfoBuilder &add_texture(VoxelFace face, const std::string &texture);
+    VoxelInfoBuilder &set_touch(VoxelTouch type, const Vec3f &coeffs);
 
 public:
     VoxelID build(void) const;

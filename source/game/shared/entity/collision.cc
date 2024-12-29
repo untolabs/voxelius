@@ -14,34 +14,25 @@
 #include "shared/globals.hh"
 
 
-static int grid_collide(int d, CollisionComponent &collision, TransformComponent &transform, VelocityComponent &velocity)
+static int vgrid_collide(int d, CollisionComponent &collision, TransformComponent &transform, VelocityComponent &velocity)
 {
-    const float move = globals::frametime * velocity.linear[d];
+    const auto move = globals::frametime * velocity.linear[d];
+    const auto move_sign = cxpr::sign<int>(move);
 
-    // The template-coordinated bounding box for the
-    // collision hull of an entity (most likely the player)
-    const auto &box = collision.hull;
+    const auto &ref_hull = collision.hull;
+    const auto current_hull = Box3f::push(ref_hull, transform.position.local);
 
-    // The bounding box that we have moved
-    // into position to check for voxels inside it
-    const auto refbox = Box3f::push(box, transform.position.local);
+    auto next_hull = current_hull;
+    next_hull.min[d] += move;
+    next_hull.max[d] += move;
 
-    // The bounding box that has been moved
-    // according to the linear delta value
-    auto movbox = refbox;
-    movbox.min[d] += move;
-    movbox.max[d] += move;
-
-    // The same bounding box except in voxel
-    // grid coordinates; this encapsulates all
-    // the voxels potentially inside 
-    Box3base<LocalCoord::value_type> localbox;
-    localbox.min[0] = cxpr::floor<LocalCoord::value_type>(movbox.min[0]);
-    localbox.min[1] = cxpr::floor<LocalCoord::value_type>(movbox.min[1]);
-    localbox.min[2] = cxpr::floor<LocalCoord::value_type>(movbox.min[2]);
-    localbox.max[0] = cxpr::ceil<LocalCoord::value_type>(movbox.max[0]);
-    localbox.max[1] = cxpr::ceil<LocalCoord::value_type>(movbox.max[1]);
-    localbox.max[2] = cxpr::ceil<LocalCoord::value_type>(movbox.max[2]);
+    Box3base<LocalCoord::value_type> lpos_hull;
+    lpos_hull.min[0] = cxpr::floor<LocalCoord::value_type>(next_hull.min[0]);
+    lpos_hull.min[1] = cxpr::floor<LocalCoord::value_type>(next_hull.min[1]);
+    lpos_hull.min[2] = cxpr::floor<LocalCoord::value_type>(next_hull.min[2]);
+    lpos_hull.max[0] = cxpr::ceil<LocalCoord::value_type>(next_hull.max[0]);
+    lpos_hull.max[1] = cxpr::ceil<LocalCoord::value_type>(next_hull.max[1]);
+    lpos_hull.max[2] = cxpr::ceil<LocalCoord::value_type>(next_hull.max[2]);
 
     // Other axes
     const int u = (d + 1) % 3;
@@ -53,18 +44,22 @@ static int grid_collide(int d, CollisionComponent &collision, TransformComponent
 
     if(move < 0.0f) {
         ddir = LocalCoord::value_type(+1);
-        dmin = localbox.min[d];
-        dmax = localbox.max[d];
+        dmin = lpos_hull.min[d];
+        dmax = lpos_hull.max[d];
     }
     else {
         ddir = LocalCoord::value_type(-1);
-        dmin = localbox.max[d];
-        dmax = localbox.min[d];
+        dmin = lpos_hull.max[d];
+        dmax = lpos_hull.min[d];
     }
 
+    VoxelTouch latch_touch = TOUCH_NOTHING;
+    Vec3f latch_coeffs = Vec3f::zero();
+    Box3f latch_vbox = {};
+
     for(auto i = dmin; i != dmax; i += ddir) {
-        for(auto j = localbox.min[u]; j <= localbox.max[u]; ++j)
-        for(auto k = localbox.min[v]; k <= localbox.max[v]; ++k) {
+        for(auto j = lpos_hull.min[u]; j < lpos_hull.max[u]; ++j)
+        for(auto k = lpos_hull.min[v]; k < lpos_hull.max[v]; ++k) {
             LocalCoord lpos;
             lpos[d] = i;
             lpos[u] = j;
@@ -81,17 +76,48 @@ static int grid_collide(int d, CollisionComponent &collision, TransformComponent
 
             Box3f vbox;
             vbox.min = Vec3f(lpos);
-            vbox.max = Vec3f(lpos) + 1.0f;
+            vbox.max = Vec3f(lpos + 1);
 
-            if(!Box3f::intersect(movbox, vbox)) {
+            if(!Box3f::intersect(next_hull, vbox)) {
                 // No intersection between the voxel
                 // and the entity's collision hull
                 continue;
             }
 
-            velocity.linear[d] = 0.0f;
+            if(info->touch_type == TOUCH_SOLID) {
+                // Solid touch type makes a collision
+                // response whenever it is encountered
+                velocity.linear[d] = 0.0f;
+                return move_sign;
+            }
 
-            return cxpr::sign<int>(move);
+            // In case of other touch types, they
+            // are latched and the last ever touch
+            // type is then responded to
+            if(info->touch_type != TOUCH_NOTHING) {
+                latch_touch = info->touch_type;
+                latch_coeffs = info->touch_coeffs;
+                latch_vbox = vbox;
+                continue;
+            }
+        }
+    }
+
+    if(latch_touch != TOUCH_NOTHING) {
+        if(latch_touch == TOUCH_BOUNCE) {
+            const auto move_distance = cxpr::abs(current_hull.min[d] - next_hull.min[d]);
+            const auto threshold = 2.0f * globals::frametime;
+
+            if(move_distance > threshold)
+                velocity.linear[d] *= -latch_coeffs[d];
+            else velocity.linear[d] = 0.0f;
+
+            return move_sign;
+        }
+
+        if(latch_touch == TOUCH_SINK) {
+            velocity.linear[d] *= latch_coeffs[d];
+            return move_sign;
         }
     }
 
@@ -112,11 +138,11 @@ void CollisionComponent::update(void)
     auto group = globals::registry.group<CollisionComponent>(entt::get<TransformComponent, VelocityComponent>);
 
     for(auto [entity, collision, transform, velocity] : group.each()) {
-        if(grid_collide(1, collision, transform, velocity) == (-cxpr::sign<int>(GravityComponent::acceleration)))
+        if(vgrid_collide(1, collision, transform, velocity) == (-cxpr::sign<int>(GravityComponent::acceleration)))
             globals::registry.emplace_or_replace<GroundedComponent>(entity);
         else globals::registry.remove<GroundedComponent>(entity);
 
-        grid_collide(0, collision, transform, velocity);
-        grid_collide(2, collision, transform, velocity);
+        vgrid_collide(0, collision, transform, velocity);
+        vgrid_collide(2, collision, transform, velocity);
     }
 }
