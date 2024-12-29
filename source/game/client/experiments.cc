@@ -13,6 +13,7 @@
 #include "client/gui/chat.hh"
 
 #include "client/hud/hotbar.hh"
+#include "client/hud/status_lines.hh"
 
 #include "client/world/player_target.hh"
 
@@ -35,8 +36,11 @@ static void on_glfw_mouse_button(const GlfwMouseButtonEvent &event)
             }
 
             if(event.button == GLFW_MOUSE_BUTTON_MIDDLE) {
-                if(player_target::voxel != NULL_VOXEL)
+                if(player_target::voxel != NULL_VOXEL) {
                     hotbar::slots[hotbar::active_slot] = player_target::voxel;
+                    status_lines::set_item(player_target::info->name);
+                }
+
                 return;
             }
         }
@@ -56,8 +60,8 @@ void experiments::init_late(void)
     hotbar::slots[3] = game_voxels::stone;
     hotbar::slots[4] = game_voxels::vtest;
     hotbar::slots[5] = game_voxels::slime;
-    hotbar::slots[6] = game_voxels::superslime;
-    hotbar::slots[7] = game_voxels::mud;
+    hotbar::slots[6] = game_voxels::mud;
+    hotbar::slots[7] = game_voxels::oak_planks;
     hotbar::slots[8] = game_voxels::glass;
 }
 

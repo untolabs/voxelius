@@ -16,7 +16,6 @@ VoxelID game_voxels::oak_planks = NULL_VOXEL;
 VoxelID game_voxels::oak_log = NULL_VOXEL;
 VoxelID game_voxels::glass = NULL_VOXEL;
 VoxelID game_voxels::slime = NULL_VOXEL;
-VoxelID game_voxels::superslime = NULL_VOXEL;
 VoxelID game_voxels::mud = NULL_VOXEL;
 
 void game_voxels::populate(void)
@@ -96,12 +95,6 @@ void game_voxels::populate(void)
     game_voxels::slime = vdef::construct("slime", VoxelType::Cube, false, true)
         .set_touch(TOUCH_BOUNCE, Vec3f(0.00f, 0.60f, 0.00f))
         .add_texture_default("textures/voxels/slime_01.png")
-        .build();
-
-    // Super-slime; a positive feedback loop of bounciness!
-    game_voxels::superslime = vdef::construct("superslime", VoxelType::Cube, false, true)
-        .set_touch(TOUCH_SINK, Vec3f(0.00f, -1.50f, 0.00f))
-        .add_texture_default("textures/voxels/superslime_01.png")
         .build();
 
     // Mud; you sink in it

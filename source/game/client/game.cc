@@ -44,6 +44,7 @@
 
 #include "client/hud/crosshair.hh"
 #include "client/hud/hotbar.hh"
+#include "client/hud/status_lines.hh"
 
 #include "client/world/chunk_mesher.hh"
 #include "client/world/chunk_renderer.hh"
@@ -216,8 +217,6 @@ void client_game::init(void)
     chunk_mesher::init();
     chunk_renderer::init();
 
-    crosshair::init();
-
     skybox::init();
 
     outline::init();
@@ -323,7 +322,9 @@ void client_game::init(void)
     experiments::init();
 #endif /* ENABLE_EXPERIMENTS */
 
+    crosshair::init();
     hotbar::init();
+    status_lines::init();
 
     globals::gui_keybind_ptr = nullptr;
     globals::gui_scale = 0U;
@@ -581,6 +582,8 @@ void client_game::layout(void)
 
         if(!globals::gui_screen) {
             hotbar::layout();
+
+            status_lines::layout();
         }
     }
 

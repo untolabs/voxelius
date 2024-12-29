@@ -2,6 +2,8 @@
 #include "client/precompiled.hh"
 #include "client/gui/metrics.hh"
 
+#include "client/gui/text_shadow.hh"
+
 #include "client/game.hh"
 #include "client/globals.hh"
 #include "client/view.hh"
@@ -23,29 +25,59 @@ void metrics::layout(void)
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
     ImGui::SetNextWindowSize(viewport->Size);
     ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
-    ImGui::PushFont(globals::font_debug);
 
-    if(ImGui::Begin("###metrics", nullptr, WINDOW_FLAGS)) {
-        const float ui_framerate = 1.0f / globals::frametime_avg;
-        const float ui_frametime = 1000.0f * globals::frametime_avg;
-  
-        if(client_game::vertical_sync)
-            ImGui::Text("%.02f FPS [%.02f ms] [VSYNC]", ui_framerate, ui_frametime);
-        else ImGui::Text("%.02f FPS [%.02f ms]", ui_framerate, ui_frametime);
-
-        ImGui::Text("World drawcalls: %zu", globals::num_drawcalls);
-        ImGui::Text("World triangles: %zu", globals::num_triangles);
-        ImGui::Text("GL_VERSION: %s", gl_version.c_str());
-        ImGui::Text("GL_RENDERER: %s", gl_renderer.c_str());
-        
-        const ChunkCoord &cpos = view::position.chunk;
-        const VoxelCoord vpos = WorldCoord::to_voxel(view::position);
-        const std::intmax_t jcpos[3] = { cpos[0], cpos[1], cpos[2] };
-        const std::intmax_t jvpos[3] = { vpos[0], vpos[1], vpos[2] };
-        ImGui::Text("voxel: [%jd; %jd; %jd]", jvpos[0], jvpos[1], jvpos[2]);
-        ImGui::Text("chunk: [%jd; %jd; %jd]", jcpos[0], jcpos[1], jcpos[2]);
+    if(!ImGui::Begin("###GUI_Metrics", nullptr, WINDOW_FLAGS)) {
+        ImGui::End();
+        return;
     }
+
+    const auto text_U32 = ImGui::GetColorU32(ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+    const auto shadow_U32 = ImGui::GetColorU32(ImVec4(0.1f, 0.1f, 0.1f, 1.0f));
+
+    ImDrawList *draw_list = ImGui::GetWindowDrawList();
+
+    ImVec2 position = ImVec2(8.0f, 8.0f);
+
+    const float ui_framerate = 1.0f / globals::frametime_avg;
+    const float ui_frametime = 1000.0f * globals::frametime_avg;
+
+    if(client_game::vertical_sync) {
+        text_shadow::layout(fmt::format("{:.02f} FPS [{:.02f} ms] [VSYNC]", ui_framerate, ui_frametime),
+            position, text_U32, shadow_U32, globals::font_debug, draw_list);
+        position.y += 1.5f * globals::font_debug->FontSize;
+    }
+    else {
+        text_shadow::layout(fmt::format("{:.02f} FPS [{:.02f} ms]", ui_framerate, ui_frametime),
+            position, text_U32, shadow_U32, globals::font_debug, draw_list);
+        position.y += 1.5f * globals::font_debug->FontSize;
+    }
+
+    text_shadow::layout(fmt::format("World drawcalls: {}", globals::num_drawcalls),
+        position, text_U32, shadow_U32, globals::font_debug, draw_list);
+    position.y += 1.5f * globals::font_debug->FontSize;
+
+    text_shadow::layout(fmt::format("World triangles: {}", globals::num_triangles),
+        position, text_U32, shadow_U32, globals::font_debug, draw_list);
+    position.y += 1.5f * globals::font_debug->FontSize;
+
+    text_shadow::layout(fmt::format("GL_VERSION: {}", gl_version),
+        position, text_U32, shadow_U32, globals::font_debug, draw_list);
+    position.y += 1.5f * globals::font_debug->FontSize;
     
-    ImGui::PopFont();
+    text_shadow::layout(fmt::format("GL_RENDERER: {}", gl_renderer),
+        position, text_U32, shadow_U32, globals::font_debug, draw_list);
+    position.y += 1.5f * globals::font_debug->FontSize;
+
+    const ChunkCoord &cpos = view::position.chunk;
+    const VoxelCoord vpos = WorldCoord::to_voxel(view::position);
+
+    text_shadow::layout(fmt::format("voxel: [{} {} {}]", vpos[0], vpos[1], vpos[2]),
+        position, text_U32, shadow_U32, globals::font_debug, draw_list);
+    position.y += 1.5f * globals::font_debug->FontSize;
+
+    text_shadow::layout(fmt::format("chunk: [{} {} {}]", cpos[0], cpos[1], cpos[2]),
+        position, text_U32, shadow_U32, globals::font_debug, draw_list);
+    position.y += 1.5f * globals::font_debug->FontSize;
+
     ImGui::End();
 }

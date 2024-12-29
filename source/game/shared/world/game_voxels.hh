@@ -15,7 +15,6 @@ extern VoxelID oak_planks;
 extern VoxelID oak_log;
 extern VoxelID glass;
 extern VoxelID slime;
-extern VoxelID superslime;
 extern VoxelID mud;
 } // namespace game_voxels
 

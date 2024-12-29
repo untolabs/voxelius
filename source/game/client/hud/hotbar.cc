@@ -11,6 +11,8 @@
 
 #include "client/gui/settings.hh"
 
+#include "client/hud/status_lines.hh"
+
 #include "client/resource/texture2D.hh"
 
 #include "client/globals.hh"
@@ -24,8 +26,6 @@ constexpr static ImGuiWindowFlags WINDOW_FLAGS = ImGuiWindowFlags_NoBackground |
 unsigned int hotbar::active_slot = 0U;
 VoxelID hotbar::slots[HOTBAR_SIZE] = {};
 
-static std::uint64_t slot_spawn = UINT64_MAX;
-static std::string slot_text = std::string();
 static int hotbar_keys[HOTBAR_SIZE];
 
 static std::shared_ptr<const Texture2D> hotbar_texture = nullptr;
@@ -40,14 +40,12 @@ static ImU32 get_color_alpha(ImGuiCol style_color, float alpha)
 static void update_hotbar_item(void)
 {
     if(hotbar::slots[hotbar::active_slot] == NULL_VOXEL) {
-        slot_spawn = UINT64_MAX;
-        slot_text = std::string();
+        status_lines::set_item(std::string(), 0.0f);
         return;
     }
 
     if(const VoxelInfo *info = vdef::find(hotbar::slots[hotbar::active_slot])) {
-        slot_spawn = globals::curtime;
-        slot_text = fmt::format("{}", info->name);
+        status_lines::set_item(info->name);
         return;
     }
 }
@@ -161,19 +159,6 @@ void hotbar::layout(void)
     ImVec2 sel_start = ImVec2(window_start.x + hotbar::active_slot * item_size - sel_a, window_start.y - sel_a);
     ImVec2 sel_end = ImVec2(sel_start.x + item_size + 2.0f * sel_a, sel_start.y + item_size + 2.0f * sel_a);
     draw_list->AddImage(hotbar_selection->imgui, sel_start, sel_end);
-
-    const ImVec2 text_size = ImGui::CalcTextSize(slot_text.c_str(), slot_text.c_str() + slot_text.size());
-    const ImVec2 text_pos = ImVec2(0.5f * viewport->Size.x - 0.5f * text_size.x, viewport->Size.y - item_size - 2.0f * text_size.y);
-    const ImVec2 shad_pos = ImVec2(text_pos.x + 0.6f * globals::gui_scale, text_pos.y + 0.6f * globals::gui_scale);
-
-    const float fadeout_seconds = 3.0f;
-    const float fadeout = std::exp(-1.0f * std::pow(1.0e-6f * static_cast<float>(globals::curtime - slot_spawn) / fadeout_seconds, 10.0f));
-    const ImU32 text_col = get_color_alpha(ImGuiCol_Text, fadeout);
-    const ImU32 shad_col = get_color_alpha(ImGuiCol_WindowBg, fadeout);
-
-    const ImFont *font = ImGui::GetFont();
-    draw_list->AddText(font, font->FontSize, shad_pos, shad_col, slot_text.c_str(), slot_text.c_str() + slot_text.size());
-    draw_list->AddText(font, font->FontSize, text_pos, text_col, slot_text.c_str(), slot_text.c_str() + slot_text.size());
 
     ImGui::End();
     ImGui::PopFont();
