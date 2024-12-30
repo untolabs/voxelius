@@ -19,7 +19,7 @@
 #include "shared/event/voxel_set.hh"
 
 #include "shared/world/chunk.hh"
-#include "shared/world/vdef.hh"
+#include "shared/world/voxel_def.hh"
 
 #include "shared/protocol.hh"
 
@@ -49,8 +49,8 @@ static void on_login_request_packet(const protocol::LoginRequest &packet)
 
     // FIXME: calculate voxel registry checksum ahead of time
     // instead of figuring it out every time a new player connects
-    if(packet.vdef_checksum != vdef::calc_checksum()) {
-        protocol::send_disconnect(packet.peer, nullptr, "protocol.vdef_checksum_mismatch");
+    if(packet.voxel_def_checksum != voxel_def::calc_checksum()) {
+        protocol::send_disconnect(packet.peer, nullptr, "protocol.voxel_def_checksum_mismatch");
         return;
     }
 

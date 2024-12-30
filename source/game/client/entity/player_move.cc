@@ -2,7 +2,12 @@
 #include "client/precompiled.hh"
 #include "client/entity/player_move.hh"
 
+#include "cmake/config.hh"
+
+#include "common/config.hh"
+
 #include "mathlib/constexpr.hh"
+#include "mathlib/vec2f.hh"
 
 #include "shared/entity/gravity.hh"
 #include "shared/entity/grounded.hh"
@@ -11,10 +16,15 @@
 #include "shared/entity/velocity.hh"
 
 #include "client/gui/gui_screen.hh"
+#include "client/gui/settings.hh"
+
+#include "client/hud/status_lines.hh"
 
 #include "client/globals.hh"
 
 
+static float prev_speed_xz = 0.0f;
+static bool enable_speedometer = true;
 static Vec3f pmove_wish_dir = Vec3f::zero();
 
 static Vec3f accelerate(const Vec3f &wish_dir, const Vec3f &velocity, float wish_speed, float accel)
@@ -53,7 +63,11 @@ static Vec3f ground_move(const Vec3f &wish_dir, const Vec3f &velocity)
 
 void player_move::init(void)
 {
+    prev_speed_xz = 0.0f;
     pmove_wish_dir = Vec3f::zero();
+
+    Config::add(globals::client_config, "player_move.enable_speedometer", enable_speedometer);
+    settings::add_checkbox(2, settings::GENERAL, "player_move.enable_speedometer", enable_speedometer, true);
 }
 
 void player_move::update(void)
@@ -99,6 +113,27 @@ void player_move::update(void)
 
     if(is_grounded && (pmove_wish_dir.get_y() > 0.0f)) {
         velocity.linear[1] = GravityComponent::acceleration;
+
+        if(enable_speedometer) {
+            const auto new_speed_xz = Vec2f::length(Vec2f(velocity.linear.get_x(), velocity.linear.get_z()));
+            const auto new_speed_text = fmt::format("{:.02f} M/S", new_speed_xz);
+            const auto increase = new_speed_xz - prev_speed_xz;
+
+            if(cxpr::abs(increase) < 0.01f) {
+                // No speed increase, use the gray color
+                status_lines::set(STATUS_DEBUG, new_speed_text, Vec4f::light_gray(), 1.0f);
+            }
+            else if(increase < 0.0f) {
+                // We're slowing down, use the red color
+                status_lines::set(STATUS_DEBUG, new_speed_text, Vec4f::red(), 1.0f);
+            }
+            else {
+                // We're speeding up, use the green color
+                status_lines::set(STATUS_DEBUG, new_speed_text, Vec4f::green(), 1.0f);
+            }
+
+            prev_speed_xz = new_speed_xz;
+        }
     }
 }
 

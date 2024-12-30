@@ -1,5 +1,6 @@
 #pragma once
 #include "mathlib/vec3f.hh"
+#include "shared/world/item_id.hh"
 #include "shared/world/voxel_id.hh"
 
 enum class VoxelFace : unsigned int {
@@ -60,9 +61,9 @@ constexpr static VoxelVis VIS_UP    = 1 << FACING_UP;
 constexpr static VoxelVis VIS_DOWN  = 1 << FACING_DOWN;
 
 using VoxelTouch = unsigned short;
-constexpr static VoxelTouch TOUCH_SOLID     = 0x0000;
-constexpr static VoxelTouch TOUCH_BOUNCE    = 0x0001;
-constexpr static VoxelTouch TOUCH_SINK      = 0x0002;
+constexpr static VoxelTouch TOUCH_SOLID     = 0x0000; // Entity's velocity is set to zero
+constexpr static VoxelTouch TOUCH_BOUNCE    = 0x0001; // Entity bounces back with some energy loss
+constexpr static VoxelTouch TOUCH_SINK      = 0x0002; // Entity phases/sinks through the voxel
 constexpr static VoxelTouch TOUCH_NOTHING   = 0xFFFF;
 
 struct VoxelTexture final {
@@ -72,13 +73,31 @@ struct VoxelTexture final {
 };
 
 struct VoxelInfo final {
-    std::vector<VoxelTexture> textures {};
-    VoxelTouch touch_type {};
-    Vec3f touch_coeffs {};
     std::string name {};
     VoxelType type {};
     bool animated {};
     bool blending {};
+
+    std::vector<VoxelTexture> textures {};
+
+    // Physics properties
+    // UNDONE: player_move friction modifiers
+    // that make a voxel very sticky or slippery
+    VoxelTouch touch_type {};
+    Vec3f touch_multipliers {};
+
+    // Things set by item_def
+    // when registering new items; it's
+    // easier to figure out what item a
+    // voxel drops if the item in question is
+    // also linked to the voxel in the voxel_def
+    ItemID pick_item_id {};
+
+    // Base voxel index; some voxel types
+    // occupy multiple VoxelID values that
+    // reference the same VoxelInfo structure
+    // and the specific state is figured out
+    // by subtracting base from specified VoxelID
     VoxelID base {};
 };
 
@@ -90,7 +109,7 @@ public:
 public:
     VoxelInfoBuilder &add_texture_default(const std::string &texture);
     VoxelInfoBuilder &add_texture(VoxelFace face, const std::string &texture);
-    VoxelInfoBuilder &set_touch(VoxelTouch type, const Vec3f &coeffs);
+    VoxelInfoBuilder &set_touch(VoxelTouch type, const Vec3f &multipliers);
 
 public:
     VoxelID build(void) const;
@@ -100,26 +119,26 @@ private:
     VoxelInfo prototype;
 };
 
-namespace vdef
+namespace voxel_def
 {
 extern std::unordered_map<std::string, VoxelInfoBuilder> builders;
 extern std::unordered_map<std::string, VoxelID> names;
 extern std::vector<std::shared_ptr<VoxelInfo>> voxels;
-} // namespace vdef
+} // namespace voxel_def
 
-namespace vdef
+namespace voxel_def
 {
 VoxelInfoBuilder &construct(const std::string &name, VoxelType type, bool animated, bool blending);
 VoxelInfo *find(const std::string &name);
 VoxelInfo *find(const VoxelID voxel);
-} // namespace vdef
+} // namespace voxel_def
 
-namespace vdef
+namespace voxel_def
 {
 void purge(void);
-} // namespace vdef
+} // namespace voxel_def
 
-namespace vdef
+namespace voxel_def
 {
 std::uint64_t calc_checksum(void);
-} // namespace vdef
+} // namespace voxel_def

@@ -88,7 +88,7 @@
   "protocol.password_incorrect": "Неправильный пароль сервера",
   "protocol.server_full": "Сервер заполнен",
   "protocol.server_shutdown": "Сервер завершает работу",
-  "protocol.vdef_checksum_mismatch": "Ошибка контрольной суммы VDef",
+  "protocol.voxel_def_checksum_mismatch": "Ошибка контрольной суммы реестра вокселей",
 
   "connecting.cancel_button": "Отмена",
   "connecting.connecting": "Подключение",

@@ -102,7 +102,8 @@ void protocol::send(ENetPeer *peer, ENetHost *host, const protocol::LoginRequest
     PacketBuffer::setup(write_buffer);
     PacketBuffer::write_UI16(write_buffer, protocol::LoginRequest::ID);
     PacketBuffer::write_UI32(write_buffer, packet.version);
-    PacketBuffer::write_UI64(write_buffer, packet.vdef_checksum);
+    PacketBuffer::write_UI64(write_buffer, packet.voxel_def_checksum);
+    PacketBuffer::write_UI64(write_buffer, packet.item_def_checksum);
     PacketBuffer::write_UI64(write_buffer, packet.password_hash);
     PacketBuffer::write_string(write_buffer, packet.username.substr(0, protocol::MAX_USERNAME));
     basic_send(peer, host, enet_packet_create(write_buffer.vector.data(), write_buffer.vector.size(), ENET_PACKET_FLAG_RELIABLE));
@@ -284,7 +285,8 @@ void protocol::receive(const ENetPacket *packet, ENetPeer *peer)
         case protocol::LoginRequest::ID:
             login_request.peer = peer;
             login_request.version = PacketBuffer::read_UI32(read_buffer);
-            login_request.vdef_checksum = PacketBuffer::read_UI64(read_buffer);
+            login_request.voxel_def_checksum = PacketBuffer::read_UI64(read_buffer);
+            login_request.item_def_checksum = PacketBuffer::read_UI64(read_buffer);
             login_request.password_hash = PacketBuffer::read_UI64(read_buffer);
             login_request.username = PacketBuffer::read_string(read_buffer);
             globals::dispatcher.trigger(login_request);

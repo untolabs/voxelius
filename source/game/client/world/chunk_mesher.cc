@@ -12,7 +12,7 @@
 
 #include "shared/world/chunk_coord.hh"
 #include "shared/world/local_coord.hh"
-#include "shared/world/vdef.hh"
+#include "shared/world/voxel_def.hh"
 #include "shared/world/voxel_coord.hh"
 #include "shared/world/world.hh"
 
@@ -82,7 +82,7 @@ static bool vis_test(WorkerContext *ctx, VoxelID voxel, const VoxelInfo *info, c
     if(neighbour == voxel)
         return false;
 
-    if(const VoxelInfo *neighbour_info = vdef::find(neighbour)) {
+    if(const VoxelInfo *neighbour_info = voxel_def::find(neighbour)) {
         if(neighbour_info->blending != info->blending) {
             // Voxel types that use blending are semi-transparent;
             // this means they're rendered using a different setup
@@ -185,7 +185,7 @@ static void process(WorkerContext *ctx)
         const auto voxel = voxels[i];
         const auto lpos = LocalCoord::from_index(i);
 
-        const VoxelInfo *info = vdef::find(voxel);
+        const VoxelInfo *info = voxel_def::find(voxel);
 
         if(info == nullptr) {
             // Either a NULL_VOXEL or something went

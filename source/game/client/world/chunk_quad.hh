@@ -3,7 +3,7 @@
 #include "mathlib/constexpr.hh"
 #include "mathlib/vec2f.hh"
 #include "mathlib/vec3f.hh"
-#include "shared/world/vdef.hh"
+#include "shared/world/voxel_def.hh"
 
 // [0] XXXXXXXXYYYYYYYYZZZZZZZZWWWWHHHH
 // [1] FFFFTTTTTTTTTTTAAAAA------------

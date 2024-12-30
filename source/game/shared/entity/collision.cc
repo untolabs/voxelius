@@ -8,7 +8,7 @@
 #include "shared/entity/velocity.hh"
 
 #include "shared/world/local_coord.hh"
-#include "shared/world/vdef.hh"
+#include "shared/world/voxel_def.hh"
 #include "shared/world/world.hh"
 
 #include "shared/globals.hh"
@@ -54,7 +54,7 @@ static int vgrid_collide(int d, CollisionComponent &collision, TransformComponen
     }
 
     VoxelTouch latch_touch = TOUCH_NOTHING;
-    Vec3f latch_coeffs = Vec3f::zero();
+    Vec3f latch_multipliers = Vec3f::zero();
     Box3f latch_vbox = {};
 
     for(auto i = dmin; i != dmax; i += ddir) {
@@ -66,7 +66,7 @@ static int vgrid_collide(int d, CollisionComponent &collision, TransformComponen
             lpos[v] = k;
 
             const auto vpos = ChunkCoord::to_voxel(transform.position.chunk, lpos);
-            const auto info = vdef::find(world::get_voxel(vpos));
+            const auto info = voxel_def::find(world::get_voxel(vpos));
 
             if(info == nullptr) {
                 // Don't collide with something
@@ -96,7 +96,7 @@ static int vgrid_collide(int d, CollisionComponent &collision, TransformComponen
             // type is then responded to
             if(info->touch_type != TOUCH_NOTHING) {
                 latch_touch = info->touch_type;
-                latch_coeffs = info->touch_coeffs;
+                latch_multipliers = info->touch_multipliers;
                 latch_vbox = vbox;
                 continue;
             }
@@ -109,14 +109,14 @@ static int vgrid_collide(int d, CollisionComponent &collision, TransformComponen
             const auto threshold = 2.0f * globals::frametime;
 
             if(move_distance > threshold)
-                velocity.linear[d] *= -latch_coeffs[d];
+                velocity.linear[d] *= -latch_multipliers[d];
             else velocity.linear[d] = 0.0f;
 
             return move_sign;
         }
 
         if(latch_touch == TOUCH_SINK) {
-            velocity.linear[d] *= latch_coeffs[d];
+            velocity.linear[d] *= latch_multipliers[d];
             return move_sign;
         }
     }

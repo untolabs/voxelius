@@ -17,9 +17,12 @@
 #include "shared/entity/transform.hh"
 #include "shared/entity/velocity.hh"
 
+#include "shared/world/game_items.hh"
 #include "shared/world/game_voxels.hh"
+#include "shared/world/item_def.hh"
 #include "shared/world/ray_dda.hh"
 #include "shared/world/unloader.hh"
+#include "shared/world/voxel_def.hh"
 #include "shared/world/world.hh"
 
 #include "shared/protocol.hh"
@@ -45,6 +48,8 @@
 #include "client/hud/crosshair.hh"
 #include "client/hud/hotbar.hh"
 #include "client/hud/status_lines.hh"
+
+#include "client/resource/texture2D.hh"
 
 #include "client/world/chunk_mesher.hh"
 #include "client/world/chunk_renderer.hh"
@@ -341,7 +346,10 @@ void client_game::init_late(void)
 
     client_chat::init_late();
 
+    status_lines::init_late();
+
     game_voxels::populate();
+    game_items::populate();
 
 #if ENABLE_EXPERIMENTS
     experiments::init_late();
@@ -353,7 +361,7 @@ void client_game::init_late(void)
     // NOTE: this is very debug, early and a quite
     // conservative limit choice; there must be a better
     // way to make this limit way smaller than it currently is
-    for(const std::shared_ptr<VoxelInfo> &info : vdef::voxels) {
+    for(const std::shared_ptr<VoxelInfo> &info : voxel_def::voxels) {
         for(const VoxelTexture &vtex : info->textures) {
             max_texture_count += vtex.paths.size();
         }
@@ -362,7 +370,7 @@ void client_game::init_late(void)
     // UNDONE: asset packs for non-16x16 stuff
     voxel_atlas::create(16, 16, max_texture_count);
 
-    for(std::shared_ptr<VoxelInfo> &info : vdef::voxels) {
+    for(std::shared_ptr<VoxelInfo> &info : voxel_def::voxels) {
         for(VoxelTexture &vtex : info->textures) {
             if(AtlasStrip *strip = voxel_atlas::find_or_load(vtex.paths)) {
                 vtex.cached_offset = strip->offset;
@@ -370,12 +378,16 @@ void client_game::init_late(void)
                 continue;
             }
             
-            spdlog::critical("debug_session: {}: failed to load atlas strips", info->name);
+            spdlog::critical("game: {}: failed to load atlas strips", info->name);
             std::terminate();
         }
     }
 
     voxel_atlas::generate_mipmaps();
+
+    for(std::shared_ptr<ItemInfo> &info : item_def::items) {
+        info->cached_texture = resource::load<Texture2D>(info->texture, TEXTURE2D_LOAD_CLAMP_S | TEXTURE2D_LOAD_CLAMP_T);
+    }
 
     client_receive::init();
 
@@ -412,6 +424,9 @@ void client_game::deinit(void)
     chunk_mesher::deinit();
 
     globals::registry.clear();
+
+    item_def::purge();
+    voxel_def::purge();
 
     enet_host_destroy(globals::client_host);
 

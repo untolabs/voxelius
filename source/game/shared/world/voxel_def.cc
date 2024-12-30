@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: BSD-2-Clause
 #include "shared/precompiled.hh"
-#include "shared/world/vdef.hh"
+#include "shared/world/voxel_def.hh"
 
 #include "common/crc64.hh"
 #include "common/fstools.hh"
 
 
-std::unordered_map<std::string, VoxelInfoBuilder> vdef::builders = {};
-std::unordered_map<std::string, VoxelID> vdef::names = {};
-std::vector<std::shared_ptr<VoxelInfo>> vdef::voxels = {};
+std::unordered_map<std::string, VoxelInfoBuilder> voxel_def::builders = {};
+std::unordered_map<std::string, VoxelID> voxel_def::names = {};
+std::vector<std::shared_ptr<VoxelInfo>> voxel_def::voxels = {};
 
 VoxelInfoBuilder::VoxelInfoBuilder(const std::string &name, VoxelType type, bool animated, bool blending)
 {
@@ -16,8 +16,6 @@ VoxelInfoBuilder::VoxelInfoBuilder(const std::string &name, VoxelType type, bool
     prototype.type = type;
     prototype.animated = animated;
     prototype.blending = blending;
-    prototype.touch_type = TOUCH_SOLID;
-    prototype.touch_coeffs = Vec3f(0.0f, 0.0f, 0.0f);
 
     switch(type) {
         case VoxelType::Cube:
@@ -40,9 +38,16 @@ VoxelInfoBuilder::VoxelInfoBuilder(const std::string &name, VoxelType type, bool
             // Something really bad should happen if we end up here.
             // The outside code would static_cast an int to VoxelType
             // and possibly fuck a lot of things up to cause this
-            spdlog::critical("vdef: {}: unknown voxel type {}", name, static_cast<int>(type));
+            spdlog::critical("voxel_def: {}: unknown voxel type {}", name, static_cast<int>(type));
             std::terminate();
     }
+
+    // Physics properties
+    prototype.touch_type = TOUCH_SOLID;
+    prototype.touch_multipliers = Vec3f::zero();
+
+    // Things set in future by item_def
+    prototype.pick_item_id = NULL_ITEM;
 }
 
 VoxelInfoBuilder &VoxelInfoBuilder::add_texture_default(const std::string &texture)
@@ -58,19 +63,19 @@ VoxelInfoBuilder &VoxelInfoBuilder::add_texture(VoxelFace face, const std::strin
     return *this;
 }
 
-VoxelInfoBuilder &VoxelInfoBuilder::set_touch(VoxelTouch type, const Vec3f &coeffs)
+VoxelInfoBuilder &VoxelInfoBuilder::set_touch(VoxelTouch type, const Vec3f &multipliers)
 {
     prototype.touch_type = type;
-    prototype.touch_coeffs = coeffs;
+    prototype.touch_multipliers = multipliers;
     return *this;
 }
 
 VoxelID VoxelInfoBuilder::build(void) const
 {
-    const auto it = vdef::names.find(prototype.name);
+    const auto it = voxel_def::names.find(prototype.name);
 
-    if(it != vdef::names.cend()) {
-        spdlog::warn("vdef: cannot build {}: name already present", prototype.name);
+    if(it != voxel_def::names.cend()) {
+        spdlog::warn("voxel_def: cannot build {}: name already present", prototype.name);
         return it->second;
     }
 
@@ -93,12 +98,12 @@ VoxelID VoxelInfoBuilder::build(void) const
             // Something really bad should happen if we end up here.
             // The outside code would static_cast an int to VoxelType
             // and possibly fuck a lot of things up to cause this
-            spdlog::critical("vdef: {}: unknown voxel type {}", prototype.name, static_cast<int>(prototype.type));
+            spdlog::critical("voxel_def: {}: unknown voxel type {}", prototype.name, static_cast<int>(prototype.type));
             std::terminate();
     }
 
-    if((vdef::voxels.size() + state_count) >= VOXEL_MAX) {
-        spdlog::critical("vdef: voxel registry overflow");
+    if((voxel_def::voxels.size() + state_count) >= VOXEL_MAX) {
+        spdlog::critical("voxel_def: voxel registry overflow");
         std::terminate();
     }
 
@@ -107,10 +112,8 @@ VoxelID VoxelInfoBuilder::build(void) const
     new_info->type = prototype.type;
     new_info->animated = prototype.animated;
     new_info->blending = prototype.blending;
-    new_info->touch_type = prototype.touch_type;
-    new_info->touch_coeffs = prototype.touch_coeffs;
+
     new_info->textures.resize(prototype.textures.size());
-    new_info->base = vdef::voxels.size() + 1;
 
     for(std::size_t i = 0; i < prototype.textures.size(); ++i) {
         if(prototype.textures[i].paths.empty()) {
@@ -125,43 +128,54 @@ VoxelID VoxelInfoBuilder::build(void) const
         }
     }
 
+    // Physics properties
+    new_info->touch_type = prototype.touch_type;
+    new_info->touch_multipliers = prototype.touch_multipliers;
+
+    // Things set in future by item_def
+    new_info->pick_item_id = prototype.pick_item_id;
+
+    // Base voxel identifier offset
+    new_info->base = voxel_def::voxels.size() + 1;
+
     for(std::size_t i = 0; i < state_count; ++i)
-        vdef::voxels.push_back(new_info);
+        voxel_def::voxels.push_back(new_info);
+    voxel_def::names.insert_or_assign(new_info->name, new_info->base);
+
     return new_info->base;
 }
 
-VoxelInfoBuilder &vdef::construct(const std::string &name, VoxelType type, bool animated, bool blending)
+VoxelInfoBuilder &voxel_def::construct(const std::string &name, VoxelType type, bool animated, bool blending)
 {
-    const auto it = vdef::builders.find(name);
-
-    if(it != vdef::builders.cend())
+    const auto it = voxel_def::builders.find(name);
+    if(it != voxel_def::builders.cend())
         return it->second;
-    return vdef::builders.emplace(name, VoxelInfoBuilder(name, type, animated, blending)).first->second;
+    return voxel_def::builders.emplace(name, VoxelInfoBuilder(name, type, animated, blending)).first->second;
 }
 
-VoxelInfo *vdef::find(const std::string &name)
+VoxelInfo *voxel_def::find(const std::string &name)
 {
-    const auto it = vdef::names.find(name);
-    if(it != vdef::names.cend())
-        return vdef::find(it->second);
+    const auto it = voxel_def::names.find(name);
+    if(it != voxel_def::names.cend())
+        return voxel_def::find(it->second);
     return nullptr;
 }
 
-VoxelInfo *vdef::find(const VoxelID voxel)
+VoxelInfo *voxel_def::find(const VoxelID voxel)
 {
-    if((voxel != NULL_VOXEL) && (voxel <= vdef::voxels.size()))
-        return vdef::voxels[voxel - 1].get();
+    if((voxel != NULL_VOXEL) && (voxel <= voxel_def::voxels.size()))
+        return voxel_def::voxels[voxel - 1].get();
     return nullptr;
 }
 
-void vdef::purge(void)
+void voxel_def::purge(void)
 {
-    vdef::builders.clear();
-    vdef::names.clear();
-    vdef::voxels.clear();
+    voxel_def::builders.clear();
+    voxel_def::names.clear();
+    voxel_def::voxels.clear();
 }
 
-std::uint64_t vdef::calc_checksum(void)
+std::uint64_t voxel_def::calc_checksum(void)
 {
     std::uint64_t result = 0;
 

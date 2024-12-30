@@ -17,7 +17,7 @@
 #include "shared/world/local_coord.hh"
 #include "shared/world/universe.hh"
 #include "shared/world/unloader.hh"
-#include "shared/world/vdef.hh"
+#include "shared/world/voxel_def.hh"
 #include "shared/world/voxel_coord.hh"
 #include "shared/world/world.hh"
 
@@ -278,7 +278,7 @@ void session::mp::send_login_request(void)
 {
     protocol::LoginRequest packet = {};
     packet.version = protocol::VERSION;
-    packet.vdef_checksum = vdef::calc_checksum();
+    packet.voxel_def_checksum = voxel_def::calc_checksum();
     packet.password_hash = server_password_hash;
     packet.username = client_game::username;
     protocol::send(globals::session_peer, nullptr, packet);

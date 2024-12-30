@@ -35,7 +35,7 @@ void player_target::update(void)
             if((player_target::voxel = RayDDA::step(ray)) != NULL_VOXEL) {
                 player_target::vvec = ray.vpos;
                 player_target::vnormal = ray.vnormal;
-                player_target::info = vdef::find(player_target::voxel);
+                player_target::info = voxel_def::find(player_target::voxel);
                 break;
             }
             

@@ -4,7 +4,7 @@
 
 #include "common/config.hh"
 
-#include "shared/world/vdef.hh"
+#include "shared/world/item_def.hh"
 
 #include "client/event/glfw_key.hh"
 #include "client/event/glfw_scroll.hh"
@@ -19,17 +19,19 @@
 
 
 constexpr static float ITEM_SIZE = 20.0f;
+constexpr static float ITEM_PADDING = 2.0f;
+constexpr static float SELECTOR_PADDING = 1.0f;
 constexpr static float HOTBAR_PADDING = 2.0f;
 
 constexpr static ImGuiWindowFlags WINDOW_FLAGS = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration;
 
 unsigned int hotbar::active_slot = 0U;
-VoxelID hotbar::slots[HOTBAR_SIZE] = {};
+ItemID hotbar::slots[HOTBAR_SIZE] = {};
 
 static int hotbar_keys[HOTBAR_SIZE];
 
-static std::shared_ptr<const Texture2D> hotbar_texture = nullptr;
-static std::shared_ptr<const Texture2D> hotbar_selection = nullptr;
+static std::shared_ptr<const Texture2D> hotbar_background = nullptr;
+static std::shared_ptr<const Texture2D> hotbar_selector = nullptr;
 
 static ImU32 get_color_alpha(ImGuiCol style_color, float alpha)
 {
@@ -40,12 +42,12 @@ static ImU32 get_color_alpha(ImGuiCol style_color, float alpha)
 static void update_hotbar_item(void)
 {
     if(hotbar::slots[hotbar::active_slot] == NULL_VOXEL) {
-        status_lines::set_item(std::string(), 0.0f);
+        status_lines::unset(STATUS_HOTBAR);
         return;
     }
 
-    if(const VoxelInfo *info = vdef::find(hotbar::slots[hotbar::active_slot])) {
-        status_lines::set_item(info->name);
+    if(const ItemInfo *info = item_def::find(hotbar::slots[hotbar::active_slot])) {
+        status_lines::set(STATUS_HOTBAR, info->name, Vec4f::white(), 5.0f);
         return;
     }
 }
@@ -114,8 +116,8 @@ void hotbar::init(void)
     settings::add_key_binding(17, settings::KEYBOARD_GAMEPLAY, "hotbar.key.7", hotbar_keys[7]);
     settings::add_key_binding(18, settings::KEYBOARD_GAMEPLAY, "hotbar.key.8", hotbar_keys[8]);
 
-    hotbar_texture = resource::load<Texture2D>("textures/hud/hotbar.png", TEXTURE2D_LOAD_CLAMP_S | TEXTURE2D_LOAD_CLAMP_T);
-    hotbar_selection = resource::load<Texture2D>("textures/hud/hotbar_selection.png", TEXTURE2D_LOAD_CLAMP_S | TEXTURE2D_LOAD_CLAMP_T);
+    hotbar_background = resource::load<Texture2D>("textures/hud/hotbar_background.png", TEXTURE2D_LOAD_CLAMP_S | TEXTURE2D_LOAD_CLAMP_T);
+    hotbar_selector = resource::load<Texture2D>("textures/hud/hotbar_selector.png", TEXTURE2D_LOAD_CLAMP_S | TEXTURE2D_LOAD_CLAMP_T);
 
     globals::dispatcher.sink<GlfwKeyEvent>().connect<&on_glfw_key>();
     globals::dispatcher.sink<GlfwScrollEvent>().connect<&on_glfw_scroll>();
@@ -123,8 +125,8 @@ void hotbar::init(void)
 
 void hotbar::deinit(void)
 {
-    hotbar_texture = nullptr;
-    hotbar_selection = nullptr;
+    hotbar_background = nullptr;
+    hotbar_selector = nullptr;
 }
 
 void hotbar::layout(void)
@@ -152,13 +154,36 @@ void hotbar::layout(void)
 
     ImDrawList *draw_list = ImGui::GetForegroundDrawList();
 
-    ImVec2 bg_end = ImVec2(window_start.x + window_size.x, window_start.y + window_size.y);
-    draw_list->AddImage(hotbar_texture->imgui, window_start, bg_end);
+    // Draw the hotbar background image
+    const auto background_start = ImVec2(window_start.x, window_start.y);
+    const auto background_end = ImVec2(background_start.x + window_size.x, background_start.y + window_size.y);
+    draw_list->AddImage(hotbar_background->imgui, background_start, background_end);
 
-    const float sel_a = 1.0f * globals::gui_scale;
-    ImVec2 sel_start = ImVec2(window_start.x + hotbar::active_slot * item_size - sel_a, window_start.y - sel_a);
-    ImVec2 sel_end = ImVec2(sel_start.x + item_size + 2.0f * sel_a, sel_start.y + item_size + 2.0f * sel_a);
-    draw_list->AddImage(hotbar_selection->imgui, sel_start, sel_end);
+    // Draw the hotbar selector image
+    const auto selector_padding_a = SELECTOR_PADDING * globals::gui_scale;
+    const auto selector_padding_b = SELECTOR_PADDING * globals::gui_scale * 2.0f;
+    const auto selector_start = ImVec2(window_start.x + hotbar::active_slot * item_size - selector_padding_a, window_start.y - selector_padding_a);
+    const auto selector_end = ImVec2(selector_start.x + item_size + selector_padding_b, selector_start.y + item_size + selector_padding_b);
+    draw_list->AddImage(hotbar_selector->imgui, selector_start, selector_end);
+
+    // Figure out item texture padding values
+    const auto item_padding_a = ITEM_PADDING * globals::gui_scale;
+    const auto item_padding_b = ITEM_PADDING * globals::gui_scale * 2.0f;
+
+    // Draw individual item textures in the hotbar
+    for(std::size_t i = 0; i < HOTBAR_SIZE; ++i) {
+        const auto info = item_def::find(hotbar::slots[i]);
+
+        if((info == nullptr) || (info->cached_texture == nullptr)) {
+            // There's either no item in the slot
+            // or the item doesn't have a texture
+            continue;
+        }
+
+        const auto item_start = ImVec2(window_start.x + i * item_size + item_padding_a, window_start.y + item_padding_a);
+        const auto item_end = ImVec2(item_start.x + item_size - item_padding_b, item_start.y + item_size - item_padding_b);
+        draw_list->AddImage(info->cached_texture->imgui, item_start, item_end);
+    }
 
     ImGui::End();
     ImGui::PopFont();

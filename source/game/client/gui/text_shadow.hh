@@ -3,5 +3,5 @@
 
 namespace text_shadow
 {
-void layout(const std::string &text, const ImVec2 &position, ImU32 text_color, ImU32 shadow_color, ImFont *font, ImDrawList *draw_list);
+void layout(const std::string &text, const ImVec2 &position, ImU32 text_color, ImU32 shadow_color, const ImFont *font, ImDrawList *draw_list);
 } // namespace text_shadow

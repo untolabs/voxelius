@@ -4,7 +4,9 @@
 
 #if ENABLE_EXPERIMENTS
 
+#include "shared/world/game_items.hh"
 #include "shared/world/game_voxels.hh"
+#include "shared/world/item_def.hh"
 #include "shared/world/world.hh"
 
 #include "client/event/glfw_mouse_button.hh"
@@ -20,27 +22,31 @@
 #include "client/globals.hh"
 
 
+static void do_remove_voxel(void)
+{
+    world::set_voxel(NULL_VOXEL, player_target::vvec);
+}
+
+static void do_place_voxel(void)
+{
+    if(auto info = item_def::find(hotbar::slots[hotbar::active_slot])) {
+        if(info->place_voxel != NULL_VOXEL)
+            world::set_voxel(info->place_voxel, player_target::vvec + player_target::vnormal);
+        return;
+    }
+}
+
 static void on_glfw_mouse_button(const GlfwMouseButtonEvent &event)
 {
     if(!globals::gui_screen && globals::registry.valid(globals::player)) {
         if((event.action == GLFW_PRESS) && (player_target::voxel != NULL_VOXEL)) {
             if(event.button == GLFW_MOUSE_BUTTON_LEFT) {
-                world::set_voxel(NULL_VOXEL, player_target::vvec);
+                do_remove_voxel();
                 return;
             }
 
             if(event.button == GLFW_MOUSE_BUTTON_RIGHT) {
-                if(hotbar::slots[hotbar::active_slot] != NULL_VOXEL)
-                    world::set_voxel(hotbar::slots[hotbar::active_slot], player_target::vvec + player_target::vnormal);
-                return;
-            }
-
-            if(event.button == GLFW_MOUSE_BUTTON_MIDDLE) {
-                if(player_target::voxel != NULL_VOXEL) {
-                    hotbar::slots[hotbar::active_slot] = player_target::voxel;
-                    status_lines::set_item(player_target::info->name);
-                }
-
+                do_place_voxel();
                 return;
             }
         }
@@ -54,15 +60,10 @@ void experiments::init(void)
 
 void experiments::init_late(void)
 {
-    hotbar::slots[0] = game_voxels::cobblestone;
-    hotbar::slots[1] = game_voxels::dirt;
-    hotbar::slots[2] = game_voxels::grass;
-    hotbar::slots[3] = game_voxels::stone;
-    hotbar::slots[4] = game_voxels::vtest;
-    hotbar::slots[5] = game_voxels::slime;
-    hotbar::slots[6] = game_voxels::mud;
-    hotbar::slots[7] = game_voxels::oak_planks;
-    hotbar::slots[8] = game_voxels::glass;
+    hotbar::slots[0] = game_items::cobblestone;
+    hotbar::slots[1] = game_items::stone;
+    hotbar::slots[2] = game_items::dirt;
+    hotbar::slots[3] = game_items::grass;
 }
 
 void experiments::deinit(void)

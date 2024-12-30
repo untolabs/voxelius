@@ -88,7 +88,7 @@
   "protocol.password_incorrect": "Incorrect server password",
   "protocol.server_full": "Server is full",
   "protocol.server_shutdown": "Server shutdown",
-  "protocol.vdef_checksum_mismatch": "VDef2 checksum mismatch",
+  "protocol.voxel_def_checksum_mismatch": "Voxel registry checksum mismatch",
 
   "connecting.cancel_button": "Cancel",
   "connecting.connecting": "Connecting",

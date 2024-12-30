@@ -25,7 +25,7 @@ static std::size_t atlas_count = {};
 static std::vector<AtlasPlane> planes = {};
 
 // Certain animated and varied voxels just double their
-// textures (see the "default" texture part in VDefBuilder::build)
+// textures (see the "default" texture part in VoxelInfoBuilder::build)
 // so there could either be six UNIQUE atlas strips or only one
 // https://crypto.stackexchange.com/questions/55162/best-way-to-hash-two-values-into-one
 static std::size_t vector_hash(const std::vector<std::string> &strings)

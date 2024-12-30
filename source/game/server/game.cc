@@ -14,6 +14,7 @@
 #include "shared/entity/transform.hh"
 #include "shared/entity/velocity.hh"
 
+#include "shared/world/game_items.hh"
 #include "shared/world/game_voxels.hh"
 #include "shared/world/universe.hh"
 #include "shared/world/unloader.hh"
@@ -92,6 +93,7 @@ void server_game::init_late(void)
     spdlog::info("game: host: listening on UDP port {}", address.port);
 
     game_voxels::populate();
+    game_items::populate();
 
     std::string universe_name = {};
 
