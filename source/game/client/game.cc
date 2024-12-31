@@ -442,13 +442,6 @@ void client_game::update(void)
     experiments::update();
 #endif /* ENABLE_EXPERIMENTS */
 
-#if ENABLE_EXPERIMENTS
-    if(globals::registry.valid(globals::player)) {
-        auto &velocity = globals::registry.get<VelocityComponent>(globals::player);
-        velocity.linear[1] -= globals::frametime * 30.0f;
-    }
-#endif
-
     player_move::update();
     player_target::update();
 

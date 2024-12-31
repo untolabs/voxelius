@@ -122,7 +122,7 @@ void player_move::update(void)
     }
 
     if(is_grounded && (pmove_wish_dir.get_y() > 0.0f) && (globals::curtime >= next_jump)) {
-        velocity.linear.set_y(GravityComponent::acceleration);
+        velocity.linear.set_y(GravityComponent::acceleration * 0.275f);
 
         const auto new_speed_xz = Vec2f::length(Vec2f(velocity.linear.get_x(), velocity.linear.get_z()));
         const auto new_speed_text = fmt::format("{:.02f} M/S", new_speed_xz);

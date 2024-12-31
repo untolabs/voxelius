@@ -7,7 +7,7 @@
 #include "shared/globals.hh"
 
 
-float GravityComponent::acceleration = 9.8f;
+float GravityComponent::acceleration = 30.0f;
 
 void GravityComponent::update(void)
 {

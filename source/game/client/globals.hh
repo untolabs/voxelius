@@ -13,6 +13,13 @@ extern Config client_config;
 
 extern GLFWwindow *window;
 
+
+extern float frametime;
+extern float frametime_avg;
+extern std::uint64_t frametime_us;
+extern std::uint64_t curtime;
+extern std::uint64_t framecount;
+
 extern int width;
 extern int height;
 extern float aspect;

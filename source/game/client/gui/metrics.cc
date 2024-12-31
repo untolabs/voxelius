@@ -38,8 +38,9 @@ void metrics::layout(void)
 
     ImVec2 position = ImVec2(8.0f, 8.0f);
 
-    const float ui_framerate = 1.0f / globals::frametime_avg;
-    const float ui_frametime = 1000.0f * globals::frametime_avg;
+    const auto &io = ImGui::GetIO();
+    const auto ui_framerate = io.Framerate;
+    const auto ui_frametime = io.DeltaTime * 1000.0f;
 
     if(client_game::vertical_sync) {
         text_shadow::layout(fmt::format("{:.02f} FPS [{:.02f} ms] [VSYNC]", ui_framerate, ui_frametime),
