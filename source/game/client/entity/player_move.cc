@@ -88,7 +88,7 @@ void player_move::fixed_update(void)
         pmove_wish_dir = Vec3f::zero();
     }
 
-    const auto &head = globals::registry.get<HeadComponentIntr>(globals::player);
+    const auto &head = globals::registry.get<HeadComponent>(globals::player);
     auto &transform = globals::registry.get<TransformComponent>(globals::player);
     auto &velocity = globals::registry.get<VelocityComponent>(globals::player);
 
