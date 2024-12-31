@@ -22,13 +22,12 @@ static void on_entity_transform_packet(const protocol::EntityTransform &packet)
 {
     if(Session *session = sessions::find(packet.peer)) {
         if(globals::registry.valid(session->player_entity)) {
-            auto &transform = globals::registry.get_or_emplace<TransformComponent>(session->player_entity);
-            transform.angles = packet.angles;
-            transform.position = packet.coord;
+            auto &component = globals::registry.emplace_or_replace<TransformComponent>(session->player_entity);
+            component.position = packet.coord;
+            component.angles = packet.angles;
 
             // Propagate changes to the rest of the world
             // except the peer that has sent the packet in the first place
-            // UNDONE: pass nullptr instead of packet.peer when we want to correct the client
             protocol::send_entity_transform(packet.peer, globals::server_host, session->player_entity);
         }
     }
@@ -38,9 +37,9 @@ static void on_entity_velocity_packet(const protocol::EntityVelocity &packet)
 {
     if(Session *session = sessions::find(packet.peer)) {
         if(globals::registry.valid(session->player_entity)) {
-            auto &velocity = globals::registry.get_or_emplace<VelocityComponent>(session->player_entity);
-            velocity.angular = packet.angular;
-            velocity.linear = packet.linear;
+            auto &component = globals::registry.emplace_or_replace<VelocityComponent>(session->player_entity);
+            component.angular = packet.angular;
+            component.linear = packet.linear;
 
             // Propagate changes to the rest of the world
             // except the peer that has sent the packet in the first place
@@ -54,8 +53,8 @@ static void on_entity_head_packet(const protocol::EntityHead &packet)
 {
     if(Session *session = sessions::find(packet.peer)) {
         if(globals::registry.valid(session->player_entity)) {
-            auto &transform = globals::registry.get_or_emplace<HeadComponent>(session->player_entity);
-            transform.angles = packet.angles;
+            auto &component = globals::registry.emplace_or_replace<HeadComponent>(session->player_entity);
+            component.angles = packet.angles;
 
             // Propagate changes to the rest of the world
             // except the peer that has sent the packet in the first place

@@ -9,6 +9,8 @@
 #include "shared/world/item_def.hh"
 #include "shared/world/world.hh"
 
+#include "client/entity/player_target.hh"
+
 #include "client/event/glfw_mouse_button.hh"
 #include "client/event/glfw_scroll.hh"
 
@@ -16,8 +18,6 @@
 
 #include "client/hud/hotbar.hh"
 #include "client/hud/status_lines.hh"
-
-#include "client/world/player_target.hh"
 
 #include "client/globals.hh"
 

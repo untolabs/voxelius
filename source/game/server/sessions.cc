@@ -9,6 +9,7 @@
 #include "common/fstools.hh"
 #include "common/strtools.hh"
 
+#include "shared/entity/factory.hh"
 #include "shared/entity/head.hh"
 #include "shared/entity/player.hh"
 #include "shared/entity/transform.hh"
@@ -99,10 +100,7 @@ static void on_login_request_packet(const protocol::LoginRequest &packet)
         }
 
         session->player_entity = globals::registry.create();
-        globals::registry.emplace<HeadComponent>(session->player_entity, HeadComponent());
-        globals::registry.emplace<PlayerComponent>(session->player_entity, PlayerComponent());
-        globals::registry.emplace<TransformComponent>(session->player_entity, TransformComponent());
-        globals::registry.emplace<VelocityComponent>(session->player_entity, VelocityComponent());
+        entity_factory::create_player(session->player_entity, false, WorldCoord());
 
         // The player entity is to be spawned in the world the last;
         // We don't want to interact with the still not-loaded world!

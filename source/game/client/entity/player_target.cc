@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-2-Clause
 #include "client/precompiled.hh"
-#include "client/world/player_target.hh"
+#include "client/entity/player_target.hh"
 
 #include "shared/world/ray_dda.hh"
 

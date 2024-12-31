@@ -92,7 +92,7 @@ void player_move::fixed_update(void)
     auto &transform = globals::registry.get<TransformComponent>(globals::player);
     auto &velocity = globals::registry.get<VelocityComponent>(globals::player);
 
-    // Store components for interpolation
+    // Interpolation - preserve current component states
     globals::registry.emplace_or_replace<TransformComponentPrev>(globals::player, transform);
 
     Vec3f forward, right;

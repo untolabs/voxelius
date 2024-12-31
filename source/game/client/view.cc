@@ -53,26 +53,27 @@ void view::update(void)
         return;
     }
 
-    const auto &head = globals::registry.get<HeadComponent>(globals::player);
-    const auto &tform = globals::registry.get<TransformComponentIntr>(globals::player);
+    const auto &head = globals::registry.get<HeadComponentIntr>(globals::player);
+    const auto &transform = globals::registry.get<TransformComponentIntr>(globals::player);
+    const auto &velocity = globals::registry.get<VelocityComponent>(globals::player);
 
-    view::angles = tform.angles + head.angles;
-    view::position = tform.position;
-    view::position.local += head.offset;
+    view::angles = transform.angles + head.angles;
+    view::position = transform.position;
+    view::position.local += head.position;
 
     // Figure out where the camera is pointed
     Vec3f right_vector;
     Vec3angles::vectors(view::angles, &view::direction, &right_vector, nullptr);
 
-    auto patch_angles = view::angles;
-    const auto &velocity = globals::registry.get<VelocityComponent>(globals::player);
-    const auto roll = view::roll_angle * Vec3f::dot(velocity.linear / PMOVE_MAX_SPEED_GROUND, right_vector);
-    patch_angles[2] = cxpr::radians(-roll);
+    // Apply view rolling
+    auto angles = view::angles;
+    angles[2] = cxpr::radians(-view::roll_angle * Vec3f::dot(velocity.linear / PMOVE_MAX_SPEED_GROUND, right_vector));
 
     const auto z_near = 0.01f;
     const auto z_far = static_cast<float>(CHUNK_SIZE * cxpr::clamp(view::max_distance, 2U, 32U));
+
     Mat4x4f proj = Mat4x4f::proj_persp(cxpr::radians(view::vertical_fov), globals::aspect, z_near, z_far);
-    Mat4x4f view = Mat4x4f::view_psrc(view::position.local, patch_angles);
+    Mat4x4f view = Mat4x4f::view_psrc(view::position.local, angles);
 
     view::matrix = Mat4x4f::product(proj, view);
 }

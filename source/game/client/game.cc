@@ -30,6 +30,7 @@
 #include "client/entity/interpolation.hh"
 #include "client/entity/player_look.hh"
 #include "client/entity/player_move.hh"
+#include "client/entity/player_target.hh"
 
 #include "client/event/glfw_framebuffer_size.hh"
 
@@ -56,7 +57,6 @@
 #include "client/world/chunk_renderer.hh"
 #include "client/world/chunk_visibility.hh"
 #include "client/world/outline.hh"
-#include "client/world/player_target.hh"
 #include "client/world/skybox.hh"
 #include "client/world/voxel_anims.hh"
 #include "client/world/voxel_atlas.hh"
@@ -556,7 +556,7 @@ void client_game::render(void)
         hull.local += collision.hull.min;
 
         WorldCoord look = transform.position;
-        look.local += head.offset;
+        look.local += head.position;
 
         outline::cube(hull, hull_size, 2.0f, Vec4f::red());
         outline::line(look, forward, 2.0f, Vec4f::light_gray());

@@ -218,18 +218,20 @@ static void process(WorkerContext *ctx)
 
 static void finalize(WorkerContext *ctx, entt::entity entity)
 {
-    bool has_no_submeshes_b = true;
-    bool has_no_submeshes_nb = true;
-    auto &comp = globals::registry.emplace_or_replace<ChunkMeshComponent>(entity);
+    auto &component = globals::registry.emplace_or_replace<ChunkMeshComponent>(entity);
+
     const std::size_t plane_count_nb = ctx->quads_nb.size();
     const std::size_t plane_count_b = ctx->quads_b.size();
 
-    comp.quad_nb.resize(plane_count_nb);
-    comp.quad_b.resize(plane_count_b);
+    bool has_no_submeshes_b = true;
+    bool has_no_submeshes_nb = true;
+
+    component.quad_nb.resize(plane_count_nb);
+    component.quad_b.resize(plane_count_b);
 
     for(std::size_t plane = 0; plane < plane_count_nb; ++plane) {
         QuadBuilder &builder = ctx->quads_nb[plane];
-        ChunkVBO &buffer = comp.quad_nb[plane];
+        ChunkVBO &buffer = component.quad_nb[plane];
 
         if(builder.empty()) {
             if(buffer.handle) {
@@ -250,7 +252,7 @@ static void finalize(WorkerContext *ctx, entt::entity entity)
 
     for(std::size_t plane = 0; plane < plane_count_b; ++plane) {
         QuadBuilder &builder = ctx->quads_b[plane];
-        ChunkVBO &buffer = comp.quad_b[plane];
+        ChunkVBO &buffer = component.quad_b[plane];
 
         if(builder.empty()) {
             if(buffer.handle) {

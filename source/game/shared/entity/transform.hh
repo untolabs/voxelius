@@ -5,8 +5,8 @@
 
 class TransformComponent {
 public:
-    Vec3angles angles {};
     WorldCoord position {};
+    Vec3angles angles {};
 
 public:
     // Updates TransformComponent values so that
