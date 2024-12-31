@@ -64,6 +64,11 @@ void experiments::init_late(void)
     hotbar::slots[1] = game_items::stone;
     hotbar::slots[2] = game_items::dirt;
     hotbar::slots[3] = game_items::grass;
+    hotbar::slots[4] = game_items::oak_leaves;
+    hotbar::slots[5] = game_items::oak_planks;
+    hotbar::slots[6] = game_items::oak_log;
+    hotbar::slots[7] = game_items::glass;
+    hotbar::slots[8] = game_items::slime;
 }
 
 void experiments::deinit(void)
