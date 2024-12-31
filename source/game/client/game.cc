@@ -27,6 +27,7 @@
 
 #include "shared/protocol.hh"
 
+#include "client/entity/interpolation.hh"
 #include "client/entity/player_look.hh"
 #include "client/entity/player_move.hh"
 
@@ -446,8 +447,6 @@ void client_game::fixed_update(void)
 
         VelocityComponent::fixed_update();
 
-        TransformComponent::fixed_update();
-
         GravityComponent::fixed_update();
     }
 }
@@ -468,6 +467,12 @@ void client_game::update(void)
 #if ENABLE_EXPERIMENTS
     experiments::update();
 #endif /* ENABLE_EXPERIMENTS */
+
+    interpolation::update();
+
+    if(globals::registry.valid(globals::player)) {
+        TransformComponent::fixed_update();
+    }
 
     player_target::update();
 
@@ -530,7 +535,7 @@ void client_game::render(void)
     player_target::render();
 
 #if ENABLE_EXPERIMENTS
-    const auto group = globals::registry.group(entt::get<PlayerComponent, CollisionComponent, HeadComponent, TransformComponent>);
+    const auto group = globals::registry.group(entt::get<PlayerComponent, CollisionComponent, HeadComponentIntr, TransformComponentIntr>);
 
     outline::prepare();
 

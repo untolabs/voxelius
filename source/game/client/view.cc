@@ -53,8 +53,8 @@ void view::update(void)
         return;
     }
 
-    const auto &head = globals::registry.get<HeadComponent>(globals::player);
-    const auto &tform = globals::registry.get<TransformComponent>(globals::player);
+    const auto &head = globals::registry.get<HeadComponentIntr>(globals::player);
+    const auto &tform = globals::registry.get<TransformComponentIntr>(globals::player);
 
     view::angles = tform.angles + head.angles;
     view::position = tform.position;

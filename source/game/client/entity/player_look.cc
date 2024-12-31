@@ -14,9 +14,16 @@ void player_look::add_angles(float pitch_d, float yaw_d)
 {
     if(globals::registry.valid(globals::player)) {
         auto &head = globals::registry.get<HeadComponent>(globals::player);
+
         head.angles[0] += pitch_d;
         head.angles[1] += yaw_d;
         head.angles[0] = cxpr::clamp(head.angles[0], PITCH_MIN, PITCH_MAX);
         head.angles = Vec3angles::wrap_180(head.angles);
+
+        // Client-side head angles are not interpolated;
+        // Re-assigning the previous state after the current
+        // state has been already modified is certainly a way
+        // to circumvent the interpolation applied to anything with a head
+        globals::registry.emplace_or_replace<HeadComponentPrev>(globals::player, head);
     }
 }

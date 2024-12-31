@@ -88,9 +88,12 @@ void player_move::fixed_update(void)
         pmove_wish_dir = Vec3f::zero();
     }
 
-    const auto &head = globals::registry.get<HeadComponent>(globals::player);
+    const auto &head = globals::registry.get<HeadComponentIntr>(globals::player);
     auto &transform = globals::registry.get<TransformComponent>(globals::player);
     auto &velocity = globals::registry.get<VelocityComponent>(globals::player);
+
+    // Store components for interpolation
+    globals::registry.emplace_or_replace<TransformComponentPrev>(globals::player, transform);
 
     Vec3f forward, right;
     Vec3angles::vectors(Vec3angles(0.0f, head.angles[1], 0.0f), &forward, &right, nullptr);

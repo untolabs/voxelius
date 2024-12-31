@@ -1,5 +1,7 @@
 if(BUILD_CLIENT)
     add_executable(vclient
+        "${CMAKE_CURRENT_LIST_DIR}/entity/interpolation.cc"
+        "${CMAKE_CURRENT_LIST_DIR}/entity/interpolation.hh"
         "${CMAKE_CURRENT_LIST_DIR}/entity/player_look.cc"
         "${CMAKE_CURRENT_LIST_DIR}/entity/player_look.hh"
         "${CMAKE_CURRENT_LIST_DIR}/entity/player_move.cc"

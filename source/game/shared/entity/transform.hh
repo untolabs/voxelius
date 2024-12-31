@@ -3,7 +3,7 @@
 #include "mathlib/vec3angles.hh"
 #include "shared/world/world_coord.hh"
 
-class TransformComponent final {
+class TransformComponent {
 public:
     Vec3angles angles {};
     WorldCoord position {};
@@ -14,3 +14,9 @@ public:
     // within a single chunk - floating point precision fixes
     static void fixed_update(void);
 };
+
+// Clientside-only: interpolation
+// TransformComponentIntr is the interpolated state
+// TransformComponentPrev is the previously received state
+class TransformComponentIntr final : public TransformComponent {};
+class TransformComponentPrev final : public TransformComponent {};

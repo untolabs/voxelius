@@ -62,6 +62,13 @@ static void on_entity_head_packet(const protocol::EntityHead &packet)
         if(!make_entity(packet.entity))
             return;
         auto &component = globals::registry.get_or_emplace<HeadComponent>(packet.entity);
+        auto &prev_component = globals::registry.get_or_emplace<HeadComponentPrev>(packet.entity);
+
+        // Store the previous component state
+        prev_component.angles = component.angles;
+        prev_component.offset = component.offset;
+
+        // Re-assign the new component state
         component.angles = packet.angles;
     }
 }
@@ -72,6 +79,13 @@ static void on_entity_transform_packet(const protocol::EntityTransform &packet)
         if(!globals::registry.valid(packet.entity))
             static_cast<void>(globals::registry.create(packet.entity));
         auto &component = globals::registry.get_or_emplace<TransformComponent>(packet.entity);
+        auto &prev_component = globals::registry.get_or_emplace<TransformComponentPrev>(packet.entity);
+
+        // Store the previous component state
+        prev_component.angles = component.angles;
+        prev_component.position = component.position;
+
+        // Re-assign the new component state
         component.angles = packet.angles;
         component.position = packet.coord;
     }
