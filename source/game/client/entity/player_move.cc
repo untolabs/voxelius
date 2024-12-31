@@ -117,7 +117,7 @@ void player_move::fixed_update(void)
         velocity.linear.set_z(xz.get_z());
     }
 
-    if(is_grounded && (pmove_wish_dir.get_y() == 0.0f)) {
+    if(pmove_wish_dir.get_y() == 0.0f) {
         // Allow players to spam the jump key to
         // bunnyhop, otherwise jumping is done on a cooldown
         next_jump = UINT64_C(0);
