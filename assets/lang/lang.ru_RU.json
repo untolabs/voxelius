@@ -65,6 +65,7 @@
   "settings.value.language": "Язык",
   "settings.value.mouse.enable_raw_input": "Сырой ввод",
   "settings.value.mouse.sensitivity": "Чувствительность",
+  "settings.value.player_move.enable_speedometer": "Спидометр",
   "settings.value.view.max_distance": "Дальность отрисовки",
   "settings.value.view.roll_angle": "Крен камеры",
   "settings.value.view.vertical_fov": "FOV",
@@ -76,6 +77,7 @@
   "settings.tooltip.game.world_curvature": "Симулировать искривление\n горизонта Земли",
   "settings.tooltip.mouse.enable_raw_input": "Отключить фильтрацию мыши на некоторых системах",
   "settings.tooltip.mouse.sensitivity": "Насколько сильно движение курсора влияет на вращение камерой",
+  "settings.tooltip.player_move.enable_speedometer": "Отображает горизонтальную скорость",
   "settings.tooltip.view.roll_angle": "Крен камеры в стиле Quake",
   "settings.tooltip.view.vertical_fov": "Поле зрения",
 

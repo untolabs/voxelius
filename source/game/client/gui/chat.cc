@@ -124,7 +124,7 @@ void client_chat::init(void)
     Config::add(globals::client_config, "chat.history_size", history_size);
 
     settings::add_key_binding(2, settings::KEYBOARD_MISC, "key.chat", key_chat);
-    settings::add_slider(2, settings::VIDEO_GUI, "chat.history_size", history_size, 0U, MAX_HISTORY_SIZE, false);
+    settings::add_slider(1, settings::VIDEO_GUI, "chat.history_size", history_size, 0U, MAX_HISTORY_SIZE, false);
 
     globals::dispatcher.sink<protocol::ChatMessage>().connect<&on_chat_message_packet>();
     globals::dispatcher.sink<GlfwKeyEvent>().connect<&on_glfw_key>();

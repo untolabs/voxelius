@@ -188,7 +188,7 @@ void client_game::init(void)
     Config::add(globals::client_config, "game.fog_mode", client_game::fog_mode);
     Config::add(globals::client_config, "game.username", client_game::username);
 
-    settings::add_checkbox(1, settings::VIDEO_GUI, "game.streamer_mode", client_game::streamer_mode, true);
+    settings::add_checkbox(0, settings::VIDEO_GUI, "game.streamer_mode", client_game::streamer_mode, true);
     settings::add_checkbox(5, settings::VIDEO, "game.vertical_sync", client_game::vertical_sync, false);
     settings::add_checkbox(4, settings::VIDEO, "game.world_curvature", client_game::world_curvature, true);
     settings::add_slider(1, settings::VIDEO, "game.pixel_size", client_game::pixel_size, 1U, 4U, true);

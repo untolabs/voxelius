@@ -70,7 +70,7 @@ void player_move::init(void)
     pmove_wish_dir = Vec3f::zero();
 
     Config::add(globals::client_config, "player_move.enable_speedometer", enable_speedometer);
-    settings::add_checkbox(2, settings::GENERAL, "player_move.enable_speedometer", enable_speedometer, true);
+    settings::add_checkbox(2, settings::VIDEO_GUI, "player_move.enable_speedometer", enable_speedometer, true);
 }
 
 void player_move::update(void)

@@ -65,6 +65,7 @@
   "settings.value.language": "Language",
   "settings.value.mouse.enable_raw_input": "Raw input",
   "settings.value.mouse.sensitivity": "Sensitivity",
+  "settings.value.player_move.enable_speedometer": "Enable speedometer",
   "settings.value.view.max_distance": "View distance",
   "settings.value.view.roll_angle": "Roll angle",
   "settings.value.view.vertical_fov": "FOV",
@@ -76,6 +77,7 @@
   "settings.tooltip.game.world_curvature": "Simulate Earth's\nhorizon warping",
   "settings.tooltip.mouse.enable_raw_input": "Disable OS-specific mouse filtering",
   "settings.tooltip.mouse.sensitivity": "Specifies the rate at which cursor movement on 2D screen is reflected by the camera",
+  "settings.tooltip.player_move.enable_speedometer": "Display horizontal speed",
   "settings.tooltip.view.roll_angle": "Quake-styled view roll applied with sideways moves",
   "settings.tooltip.view.vertical_fov": "Field Of View",
 
