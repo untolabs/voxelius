@@ -23,9 +23,12 @@
 #include "client/globals.hh"
 
 
+constexpr static std::uint64_t JUMP_COOLDOWN = 500000; // 0.5 seconds
+
 static float prev_speed_xz = 0.0f;
 static bool enable_speedometer = true;
 static Vec3f pmove_wish_dir = Vec3f::zero();
+static std::uint64_t next_jump = UINT64_C(0);
 
 static Vec3f accelerate(const Vec3f &wish_dir, const Vec3f &velocity, float wish_speed, float accel)
 {
@@ -111,28 +114,39 @@ void player_move::update(void)
         velocity.linear.set_z(xz.get_z());
     }
 
-    if(is_grounded && (pmove_wish_dir.get_y() > 0.0f)) {
-        velocity.linear[1] = GravityComponent::acceleration;
+    if(is_grounded && (pmove_wish_dir.get_y() == 0.0f)) {
+        // Allow players to spam the jump key to
+        // bunnyhop, otherwise jumping is done on a cooldown
+        next_jump = UINT64_C(0);
+        return;
+    }
+
+    if(is_grounded && (pmove_wish_dir.get_y() > 0.0f) && (globals::curtime >= next_jump)) {
+        velocity.linear.set_y(GravityComponent::acceleration);
+
+        const auto new_speed_xz = Vec2f::length(Vec2f(velocity.linear.get_x(), velocity.linear.get_z()));
+        const auto new_speed_text = fmt::format("{:.02f} M/S", new_speed_xz);
+        const auto speed_change_xz = new_speed_xz - prev_speed_xz;
+
+        prev_speed_xz = new_speed_xz;
+        next_jump = globals::curtime + JUMP_COOLDOWN;
 
         if(enable_speedometer) {
-            const auto new_speed_xz = Vec2f::length(Vec2f(velocity.linear.get_x(), velocity.linear.get_z()));
-            const auto new_speed_text = fmt::format("{:.02f} M/S", new_speed_xz);
-            const auto increase = new_speed_xz - prev_speed_xz;
-
-            if(cxpr::abs(increase) < 0.01f) {
-                // No speed increase, use the gray color
+            if(cxpr::abs(speed_change_xz) < 0.01f) {
+                // No considerable speed increase within
+                // the precision we use to draw the speedometer
                 status_lines::set(STATUS_DEBUG, new_speed_text, Vec4f::light_gray(), 1.0f);
             }
-            else if(increase < 0.0f) {
-                // We're slowing down, use the red color
+            else if(speed_change_xz < 0.0f) {
+                // Speed change is negative, we are actively
+                // slowing down; use the red color for the status line
                 status_lines::set(STATUS_DEBUG, new_speed_text, Vec4f::red(), 1.0f);
             }
             else {
-                // We're speeding up, use the green color
+                // Speed change is positive, we are actively
+                // speeding up; use the green color for the status line
                 status_lines::set(STATUS_DEBUG, new_speed_text, Vec4f::green(), 1.0f);
             }
-
-            prev_speed_xz = new_speed_xz;
         }
     }
 }
