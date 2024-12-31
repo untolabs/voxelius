@@ -119,12 +119,12 @@ void server_game::deinit(void)
     universe::save_everything();
 }
 
-void server_game::update(void)
+void server_game::fixed_update(void)
 {
 
 }
 
-void server_game::update_late(void)
+void server_game::fixed_update_late(void)
 {
     ENetEvent event = {};
 

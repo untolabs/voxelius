@@ -7,9 +7,8 @@ public:
     Box3f hull {};
 
 public:
-    // NOTE: this must be called before
-    // transform/velocity update are called
-    // because this might as well just set
-    // an entity's velocity value to zero
-    static void update(void);
+    // NOTE: CollisionComponent::fixed_update must be called
+    // before TransformComponent::fixed_update and VelocityComponent::fixed_update
+    // because both transform and velocity may be updated internally
+    static void fixed_update(void);
 };

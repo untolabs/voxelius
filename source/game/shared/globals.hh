@@ -3,11 +3,12 @@
 
 namespace globals
 {
-extern float frametime;
-extern float frametime_avg;
-extern std::uint64_t frametime_us;
+extern float fixed_frametime;
+extern float fixed_frametime_avg;
+extern std::uint64_t fixed_frametime_us;
+extern std::uint64_t fixed_framecount;
+
 extern std::uint64_t curtime;
-extern std::uint64_t framecount;
 
 extern entt::dispatcher dispatcher;
 extern entt::registry registry;

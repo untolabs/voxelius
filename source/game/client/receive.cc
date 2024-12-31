@@ -36,7 +36,7 @@ static bool make_entity(entt::entity entity)
 
 static void on_chunk_voxels_packet(const protocol::ChunkVoxels &packet)
 {
-    if(globals::session_peer) {
+    if(session::peer) {
         if(!globals::registry.valid(packet.entity)) {
             entt::entity created = globals::registry.create(packet.entity);
 
@@ -58,7 +58,7 @@ static void on_chunk_voxels_packet(const protocol::ChunkVoxels &packet)
 
 static void on_entity_head_packet(const protocol::EntityHead &packet)
 {
-    if(globals::session_peer) {
+    if(session::peer) {
         if(!make_entity(packet.entity))
             return;
         auto &component = globals::registry.get_or_emplace<HeadComponent>(packet.entity);
@@ -68,7 +68,7 @@ static void on_entity_head_packet(const protocol::EntityHead &packet)
 
 static void on_entity_transform_packet(const protocol::EntityTransform &packet)
 {
-    if(globals::session_peer) {
+    if(session::peer) {
         if(!globals::registry.valid(packet.entity))
             static_cast<void>(globals::registry.create(packet.entity));
         auto &component = globals::registry.get_or_emplace<TransformComponent>(packet.entity);
@@ -79,7 +79,7 @@ static void on_entity_transform_packet(const protocol::EntityTransform &packet)
 
 static void on_entity_velocity_packet(const protocol::EntityVelocity &packet)
 {
-    if(globals::session_peer) {
+    if(session::peer) {
         if(!globals::registry.valid(packet.entity))
             static_cast<void>(globals::registry.create(packet.entity));
         auto &component = globals::registry.get_or_emplace<VelocityComponent>(packet.entity);
@@ -90,7 +90,7 @@ static void on_entity_velocity_packet(const protocol::EntityVelocity &packet)
 
 static void on_entity_player_packet(const protocol::EntityPlayer &packet)
 {
-    if(globals::session_peer) {
+    if(session::peer) {
         if(!globals::registry.valid(packet.entity))
             static_cast<void>(globals::registry.create(packet.entity));
         factory::create_player(packet.entity);
@@ -99,7 +99,7 @@ static void on_entity_player_packet(const protocol::EntityPlayer &packet)
 
 static void on_spawn_player_packet(const protocol::SpawnPlayer &packet)
 {
-    if(globals::session_peer) {
+    if(session::peer) {
         if(!globals::registry.valid(packet.entity)) {
             static_cast<void>(globals::registry.create(packet.entity));
             factory::create_player(packet.entity);

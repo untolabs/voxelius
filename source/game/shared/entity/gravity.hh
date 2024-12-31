@@ -5,5 +5,7 @@
 class GravityComponent final {
 public:
     static float acceleration;
-    static void update(void);
+
+public:
+    static void fixed_update(void);
 };

@@ -103,8 +103,8 @@ void chunk_renderer::render(void)
     }
 
     GLuint timings[3] = {};
-    timings[0] = globals::frametime;
-    timings[1] = globals::frametime_avg;
+    timings[0] = globals::window_frametime;
+    timings[1] = globals::window_frametime_avg;
     timings[2] = voxel_anims::frame;
 
     const auto group = globals::registry.group<ChunkComponent>(entt::get<ChunkMeshComponent, ChunkVisibleComponent>);

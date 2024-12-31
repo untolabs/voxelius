@@ -16,7 +16,7 @@
 
 static int vgrid_collide(int d, CollisionComponent &collision, TransformComponent &transform, VelocityComponent &velocity)
 {
-    const auto move = globals::frametime * velocity.linear[d];
+    const auto move = globals::fixed_frametime * velocity.linear[d];
     const auto move_sign = cxpr::sign<int>(move);
 
     const auto &ref_hull = collision.hull;
@@ -106,7 +106,7 @@ static int vgrid_collide(int d, CollisionComponent &collision, TransformComponen
     if(latch_touch != TOUCH_NOTHING) {
         if(latch_touch == TOUCH_BOUNCE) {
             const auto move_distance = cxpr::abs(current_hull.min[d] - next_hull.min[d]);
-            const auto threshold = 2.0f * globals::frametime;
+            const auto threshold = 2.0f * globals::fixed_frametime;
 
             if(move_distance > threshold)
                 velocity.linear[d] *= -latch_multipliers[d];
@@ -124,7 +124,7 @@ static int vgrid_collide(int d, CollisionComponent &collision, TransformComponen
     return 0;
 }
 
-void CollisionComponent::update(void)
+void CollisionComponent::fixed_update(void)
 {
     // FIXME: this isn't particularly accurate considering
     // some voxels might be passable and some other voxels

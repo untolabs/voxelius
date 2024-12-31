@@ -434,6 +434,33 @@ void client_game::deinit(void)
     bin_unscii16 = nullptr;
 }
 
+void client_game::fixed_update(void)
+{
+    player_move::fixed_update();
+
+    // Only update world simulation gamesystems
+    // if the player can actually observe all the
+    // changes these gamesystems cause visually
+    if(globals::registry.valid(globals::player)) {
+        CollisionComponent::fixed_update();
+
+        VelocityComponent::fixed_update();
+
+        TransformComponent::fixed_update();
+
+        GravityComponent::fixed_update();
+    }
+}
+
+void client_game::fixed_update_late(void)
+{
+    if(globals::registry.valid(globals::player)) {
+        protocol::send_entity_head(session::peer, nullptr, globals::player);
+        protocol::send_entity_transform(session::peer, nullptr, globals::player);
+        protocol::send_entity_velocity(session::peer, nullptr, globals::player);
+    }
+}
+
 void client_game::update(void)
 {
     session::sp::update();
@@ -442,17 +469,7 @@ void client_game::update(void)
     experiments::update();
 #endif /* ENABLE_EXPERIMENTS */
 
-    player_move::update();
     player_target::update();
-
-    if(globals::registry.valid(globals::player)) {
-        CollisionComponent::update();
-
-        VelocityComponent::update();
-        TransformComponent::update();
-
-        GravityComponent::update();
-    }
 
     view::update();
 
@@ -479,33 +496,19 @@ void client_game::update_late(void)
         glfwSwapInterval(1);
     else glfwSwapInterval(0);
 
-    ENetEvent event = {};
-
-    while(enet_host_service(globals::client_host, &event, 0) > 0) {
-        if(event.type == ENET_EVENT_TYPE_CONNECT) {
-            session::mp::send_login_request();
-            continue;
-        }
-
-        if(event.type == ENET_EVENT_TYPE_DISCONNECT) {
-            session::invalidate();
-            continue;
-        }
-
-        if(event.type == ENET_EVENT_TYPE_RECEIVE) {
-            protocol::receive(event.packet, event.peer);
-            enet_packet_destroy(event.packet);
-            continue;
-        }
-    }
-
-    if(globals::session_peer && (globals::curtime >= globals::session_next_transmit)) {
-        globals::session_next_transmit = globals::curtime + globals::session_tick_delta;
-
-        if(globals::registry.valid(globals::player)) {
-            protocol::send_entity_head(globals::session_peer, nullptr, globals::player);
-            protocol::send_entity_transform(globals::session_peer, nullptr, globals::player);
-            protocol::send_entity_velocity(globals::session_peer, nullptr, globals::player);
+    ENetEvent host_event;
+    while(0 < enet_host_service(globals::client_host, &host_event, 0)) {
+        switch(host_event.type) {
+            case ENET_EVENT_TYPE_CONNECT:
+                session::mp::send_login_request();
+                break;
+            case ENET_EVENT_TYPE_DISCONNECT:
+                session::invalidate();
+                break;
+            case ENET_EVENT_TYPE_RECEIVE:
+                protocol::receive(host_event.packet, host_event.peer);
+                enet_packet_destroy(host_event.packet);
+                break;
         }
     }
 

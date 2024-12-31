@@ -3,6 +3,13 @@
 
 namespace session
 {
+extern ENetPeer *peer;
+extern std::uint16_t client_index;
+extern std::uint64_t client_identity;
+} // namespace session
+
+namespace session
+{
 void init(void);
 void deinit(void);
 void invalidate(void);

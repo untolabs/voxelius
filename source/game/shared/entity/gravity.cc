@@ -9,11 +9,11 @@
 
 float GravityComponent::acceleration = 30.0f;
 
-void GravityComponent::update(void)
+void GravityComponent::fixed_update(void)
 {
     auto group = globals::registry.group<GravityComponent>(entt::get<VelocityComponent>);
 
     for(auto [entity, velocity] : group.each()) {
-        velocity.linear[1] -= GravityComponent::acceleration * globals::frametime;
+        velocity.linear[1] -= GravityComponent::acceleration * globals::fixed_frametime;
     }
 }

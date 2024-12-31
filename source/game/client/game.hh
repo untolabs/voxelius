@@ -16,6 +16,8 @@ namespace client_game
 void init(void);
 void init_late(void);
 void deinit(void);
+void fixed_update(void);
+void fixed_update_late(void);
 void update(void);
 void update_late(void);
 void render(void);

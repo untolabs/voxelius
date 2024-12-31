@@ -11,6 +11,13 @@ Config globals::client_config = {};
 
 GLFWwindow *globals::window = nullptr;
 
+float globals::window_frametime = 0.0f;
+float globals::window_frametime_avg = 0.0f;
+std::uint64_t globals::window_frametime_us = UINT64_MAX;
+std::uint64_t globals::window_framecount = 0;
+
+std::uint64_t globals::fixed_accumulator = 0;
+
 int globals::width = 0;
 int globals::height = 0;
 float globals::aspect = 0.0f;
@@ -19,12 +26,6 @@ std::size_t globals::num_drawcalls = 0;
 std::size_t globals::num_triangles = 0;
 
 ENetHost *globals::client_host = nullptr;
-
-ENetPeer *globals::session_peer = nullptr;
-std::uint16_t globals::session_index = UINT16_MAX;
-std::uint64_t globals::session_identity = UINT64_MAX;
-std::uint64_t globals::session_tick_delta = UINT64_MAX;
-std::uint64_t globals::session_next_transmit = UINT64_MAX;
 
 bool globals::is_singleplayer = true;
 

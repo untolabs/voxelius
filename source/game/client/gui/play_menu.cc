@@ -142,7 +142,7 @@ static void remove_selected_server(void)
 
 static void join_selected_server(void)
 {
-    if(globals::session_peer)
+    if(session::peer)
         return;
     session::mp::connect(selected_server->peer_host, selected_server->peer_port, selected_server->password);
 }

@@ -15,6 +15,7 @@
 
 #include "client/game.hh"
 #include "client/globals.hh"
+#include "client/session.hh"
 
 
 constexpr static ImGuiWindowFlags WINDOW_FLAGS = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration;
@@ -94,7 +95,7 @@ static void on_glfw_key(const GlfwKeyEvent &event)
                     packet.type = protocol::ChatMessage::TEXT_MESSAGE;
                     packet.sender = client_game::username;
                     packet.message = chat_input;
-                    protocol::send(globals::session_peer, nullptr, packet);
+                    protocol::send(session::peer, nullptr, packet);
                 }
             }
 

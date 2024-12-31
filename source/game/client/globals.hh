@@ -13,12 +13,17 @@ extern Config client_config;
 
 extern GLFWwindow *window;
 
+// Some gamesystems that aren't really
+// gameplay-oriented might still use client
+// framerate to interpolate discrete things
+// so it's still a good idea to keep these available
+extern float window_frametime;
+extern float window_frametime_avg;
+extern std::uint64_t window_frametime_us;
+extern std::uint64_t window_framecount;
 
-extern float frametime;
-extern float frametime_avg;
-extern std::uint64_t frametime_us;
-extern std::uint64_t curtime;
-extern std::uint64_t framecount;
+// https://gafferongames.com/post/fix_your_timestep/
+extern std::uint64_t fixed_accumulator;
 
 extern int width;
 extern int height;
@@ -28,12 +33,6 @@ extern std::size_t num_drawcalls;
 extern std::size_t num_triangles;
 
 extern ENetHost *client_host;
-
-extern ENetPeer *session_peer;
-extern std::uint16_t session_index;
-extern std::uint64_t session_identity;
-extern std::uint64_t session_tick_delta;
-extern std::uint64_t session_next_transmit;
 
 extern bool is_singleplayer;
 

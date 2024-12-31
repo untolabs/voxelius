@@ -40,7 +40,7 @@ static Vec3f accelerate(const Vec3f &wish_dir, const Vec3f &velocity, float wish
         return velocity;
     }
 
-    const auto accel_speed = cxpr::min(add_speed, accel * globals::frametime * wish_speed);
+    const auto accel_speed = cxpr::min(add_speed, accel * globals::fixed_frametime * wish_speed);
 
     auto result = Vec3f(velocity);
     result[0] += accel_speed * wish_dir[0];
@@ -56,7 +56,7 @@ static Vec3f air_move(const Vec3f &wish_dir, const Vec3f &velocity)
 static Vec3f ground_move(const Vec3f &wish_dir, const Vec3f &velocity)
 {
     if(const auto speed = Vec3f::length(velocity)) {
-        const auto speed_drop = speed * PMOVE_FRICTION_GROUND * globals::frametime;
+        const auto speed_drop = speed * PMOVE_FRICTION_GROUND * globals::fixed_frametime;
         const auto speed_factor = cxpr::max(speed - speed_drop, 0.0f) / speed;
         return accelerate(wish_dir, velocity * speed_factor, PMOVE_ACCELERATION_GROUND, PMOVE_MAX_SPEED_GROUND);
     }
@@ -73,7 +73,7 @@ void player_move::init(void)
     settings::add_checkbox(2, settings::VIDEO_GUI, "player_move.enable_speedometer", enable_speedometer, true);
 }
 
-void player_move::update(void)
+void player_move::fixed_update(void)
 {
     if(!globals::registry.valid(globals::player)) {
         // There's no point in updating movement

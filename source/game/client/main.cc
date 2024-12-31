@@ -245,30 +245,31 @@ int main(int argc, char **argv)
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
 
-    globals::frametime = 0.0f;
-    globals::frametime_avg = 0.0f;
-    globals::frametime_us = 0;
+    globals::fixed_frametime = 0.0f;
+    globals::fixed_frametime_avg = 0.0f;
+    globals::fixed_frametime_us = UINT64_MAX;
+    globals::fixed_framecount = 0;
+
     globals::curtime = epoch::microseconds();
-    globals::framecount = 0;
 
-    std::string mode_str;
+    globals::window_frametime = 0.0f;
+    globals::window_frametime_avg = 0.0f;
+    globals::window_frametime_us = 0;
+    globals::window_framecount = 0;
 
-    if(cmdline::contains("fullscreen")) {
-        GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-        const GLFWvidmode *mode = glfwGetVideoMode(monitor);
-        glfwSetWindowMonitor(globals::window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+    int vmode_width = DEFAULT_WIDTH;
+    int vmode_height = DEFAULT_HEIGHT;
+    std::string vmode_str;
+
+    if(cmdline::get_value("mode", vmode_str)) {
+        std::sscanf(vmode_str.c_str(), "%dx%d", &vmode_width, &vmode_height);
+        vmode_height = cxpr::max(vmode_height, MIN_HEIGHT);
+        vmode_width = cxpr::max(vmode_width, MIN_WIDTH);
     }
-    else if(cmdline::get_value("mode", mode_str)) {
-        int mode_width = DEFAULT_WIDTH;
-        int mode_height = DEFAULT_HEIGHT;
 
-        std::sscanf(mode_str.c_str(), "%dx%d", &mode_width, &mode_height);
-
-        mode_width = cxpr::max(mode_width, MIN_WIDTH);
-        mode_height = cxpr::max(mode_height, MIN_HEIGHT);
-
-        glfwSetWindowSize(globals::window, mode_width, mode_height);
-    }
+    if(cmdline::contains("fullscreen"))
+        glfwSetWindowMonitor(globals::window, glfwGetPrimaryMonitor(), 0, 0, vmode_width, vmode_height, GLFW_DONT_CARE);
+    else glfwSetWindowSize(globals::window, vmode_width, vmode_height);
 
     client_game::init();
 
@@ -284,10 +285,21 @@ int main(int argc, char **argv)
 
     while(!glfwWindowShouldClose(globals::window)) {
         globals::curtime = epoch::microseconds();
-        globals::frametime_us = globals::curtime - last_curtime;
-        globals::frametime = static_cast<float>(globals::frametime_us) / 1000000.0f;
-        globals::frametime_avg += globals::frametime;
-        globals::frametime_avg *= 0.5f;
+
+        globals::window_frametime_us = globals::curtime - last_curtime;
+        globals::window_frametime = static_cast<float>(globals::window_frametime_us) / 1000000.0f;
+        globals::window_frametime_avg += globals::window_frametime;
+        globals::window_frametime_avg *= 0.5f;
+
+        if(globals::fixed_frametime_us == UINT64_MAX) {
+            globals::fixed_framecount = 0;
+            globals::fixed_accumulator = 0;
+        }
+        else {
+            globals::fixed_accumulator += globals::window_frametime_us;
+            globals::fixed_framecount = globals::fixed_accumulator / globals::fixed_frametime_us;
+            globals::fixed_accumulator %= globals::fixed_frametime_us;
+        }
 
         globals::num_drawcalls = 0;
         globals::num_triangles = 0;
@@ -298,6 +310,8 @@ int main(int argc, char **argv)
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        for(std::uint64_t i = 0; i < globals::fixed_framecount; ++i)
+            client_game::fixed_update();
         client_game::update();
 
         if(!glfwGetWindowAttrib(globals::window, GLFW_ICONIFIED)) {
@@ -336,6 +350,8 @@ int main(int argc, char **argv)
 
         glfwSwapBuffers(globals::window);
 
+        for(std::uint64_t i = 0; i < globals::fixed_framecount; ++i)
+            client_game::fixed_update_late();
         client_game::update_late();
 
         glfwPollEvents();
@@ -347,7 +363,7 @@ int main(int argc, char **argv)
         // later by calling entt::dispatcher::update()
         globals::dispatcher.update();
 
-        globals::framecount += 1;
+        globals::window_framecount += 1;
 
         resource::soft_cleanup<BinaryFile>();
         resource::soft_cleanup<Image>();
@@ -362,9 +378,9 @@ int main(int argc, char **argv)
 
     resource::hard_cleanup<Texture2D>();
 
-    spdlog::info("client: shutdown after {} frames", globals::framecount);
-    spdlog::info("client: average framerate: {:.03f} FPS", 1.0f / globals::frametime_avg);
-    spdlog::info("client: average frametime: {:.03f} ms", 1000.0f * globals::frametime_avg);
+    spdlog::info("client: shutdown after {} frames", globals::window_framecount);
+    spdlog::info("client: average framerate: {:.03f} FPS", 1.0f / globals::window_frametime_avg);
+    spdlog::info("client: average frametime: {:.03f} ms", 1000.0f * globals::window_frametime_avg);
 
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();

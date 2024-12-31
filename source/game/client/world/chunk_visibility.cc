@@ -10,6 +10,7 @@
 #include "shared/protocol.hh"
 
 #include "client/globals.hh"
+#include "client/session.hh"
 #include "client/view.hh"
 
 static ChunkCoord cached_cpos = {};
@@ -28,7 +29,7 @@ static void request_chunk(const ChunkCoord &cpos)
     packet.coord[1] = cpos[1];
     packet.coord[2] = cpos[2];
 
-    protocol::send(globals::session_peer, nullptr, packet);
+    protocol::send(session::peer, nullptr, packet);
 }
 
 // Go through the list of chunk positions that should

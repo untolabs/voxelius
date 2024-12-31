@@ -3,7 +3,7 @@
 #include "shared/entity/transform.hh"
 #include "shared/globals.hh"
 
-void TransformComponent::update(void)
+void TransformComponent::fixed_update(void)
 {
     const auto view = globals::registry.view<TransformComponent>();
 

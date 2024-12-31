@@ -9,7 +9,7 @@ public:
 
 public:
     // Updates entities TransformComponent values
-    // according to velocities multiplied by frametime.
-    // This system was previously called inertial
-    static void update(void);
+    // according to velocities multiplied by fixed_frametime.
+    // NOTE: This system was previously called inertial
+    static void fixed_update(void);
 };

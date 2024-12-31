@@ -12,5 +12,5 @@ public:
     // Updates TransformComponent values so that
     // the local part of WorldCoord field is always
     // within a single chunk - floating point precision fixes
-    static void update(void);
+    static void fixed_update(void);
 };
