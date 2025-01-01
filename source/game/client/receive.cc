@@ -61,8 +61,8 @@ static void on_entity_head_packet(const protocol::EntityHead &packet)
     if(session::peer) {
         if(!synchronize_entity(packet.entity))
             return;
-        auto &component = globals::registry.emplace_or_replace<HeadComponent>(packet.entity);
-        auto &prev = globals::registry.emplace_or_replace<HeadComponentPrev>(packet.entity);
+        auto &component = globals::registry.get_or_emplace<HeadComponent>(packet.entity);
+        auto &prev = globals::registry.get_or_emplace<HeadComponentPrev>(packet.entity);
 
         // Store the previous component state
         prev.position = component.position;
@@ -80,8 +80,8 @@ static void on_entity_transform_packet(const protocol::EntityTransform &packet)
     if(session::peer) {
         if(!synchronize_entity(packet.entity))
             static_cast<void>(globals::registry.create(packet.entity));
-        auto &component = globals::registry.emplace_or_replace<TransformComponent>(packet.entity);
-        auto &prev = globals::registry.emplace_or_replace<TransformComponentPrev>(packet.entity);
+        auto &component = globals::registry.get_or_emplace<TransformComponent>(packet.entity);
+        auto &prev = globals::registry.get_or_emplace<TransformComponentPrev>(packet.entity);
 
         // Store the previous component state
         prev.position = component.position;
