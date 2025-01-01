@@ -23,8 +23,6 @@ constexpr static float ITEM_PADDING = 2.0f;
 constexpr static float SELECTOR_PADDING = 1.0f;
 constexpr static float HOTBAR_PADDING = 2.0f;
 
-constexpr static ImGuiWindowFlags WINDOW_FLAGS = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration;
-
 unsigned int hotbar::active_slot = 0U;
 ItemID hotbar::slots[HOTBAR_SIZE] = {};
 
@@ -131,44 +129,30 @@ void hotbar::deinit(void)
 
 void hotbar::layout(void)
 {
-    ImGui::PushFont(globals::font_chat);
+    auto &style = ImGui::GetStyle();
 
-    ImGuiStyle &style = ImGui::GetStyle();
+    auto item_size = ITEM_SIZE * globals::gui_scale;
+    auto hotbar_width = HOTBAR_SIZE * item_size;
+    auto hotbar_padding = HOTBAR_PADDING * globals::gui_scale;
 
-    const float item_size = ITEM_SIZE * globals::gui_scale;
-    const float hotbar_width = HOTBAR_SIZE * item_size;
-    const float hotbar_padding = HOTBAR_PADDING * globals::gui_scale;
-
-    const ImGuiViewport* viewport = ImGui::GetMainViewport();
-    const ImVec2 window_start = ImVec2(0.5f * viewport->Size.x - 0.5f * hotbar_width, viewport->Size.y - item_size - hotbar_padding);
-    const ImVec2 window_size = ImVec2(hotbar_width, item_size);
-
-    ImGui::SetNextWindowPos(window_start);
-    ImGui::SetNextWindowSize(window_size);
-
-    if(!ImGui::Begin("###HUD_Hotbar", nullptr, WINDOW_FLAGS)) {
-        ImGui::End();
-        ImGui::PopFont();
-        return;
-    }
-
-    ImDrawList *draw_list = ImGui::GetForegroundDrawList();
+    auto viewport = ImGui::GetMainViewport();
+    auto draw_list = ImGui::GetForegroundDrawList();
 
     // Draw the hotbar background image
-    const auto background_start = ImVec2(window_start.x, window_start.y);
-    const auto background_end = ImVec2(background_start.x + window_size.x, background_start.y + window_size.y);
+    auto background_start = ImVec2(0.5f * viewport->Size.x - 0.5f * hotbar_width, viewport->Size.y - item_size - hotbar_padding);
+    auto background_end = ImVec2(background_start.x + hotbar_width, background_start.y + item_size);
     draw_list->AddImage(hotbar_background->imgui, background_start, background_end);
 
     // Draw the hotbar selector image
-    const auto selector_padding_a = SELECTOR_PADDING * globals::gui_scale;
-    const auto selector_padding_b = SELECTOR_PADDING * globals::gui_scale * 2.0f;
-    const auto selector_start = ImVec2(window_start.x + hotbar::active_slot * item_size - selector_padding_a, window_start.y - selector_padding_a);
-    const auto selector_end = ImVec2(selector_start.x + item_size + selector_padding_b, selector_start.y + item_size + selector_padding_b);
+    auto selector_padding_a = SELECTOR_PADDING * globals::gui_scale;
+    auto selector_padding_b = SELECTOR_PADDING * globals::gui_scale * 2.0f;
+    auto selector_start = ImVec2(background_start.x + hotbar::active_slot * item_size - selector_padding_a, background_start.y - selector_padding_a);
+    auto selector_end = ImVec2(selector_start.x + item_size + selector_padding_b, selector_start.y + item_size + selector_padding_b);
     draw_list->AddImage(hotbar_selector->imgui, selector_start, selector_end);
 
     // Figure out item texture padding values
-    const auto item_padding_a = ITEM_PADDING * globals::gui_scale;
-    const auto item_padding_b = ITEM_PADDING * globals::gui_scale * 2.0f;
+    auto item_padding_a = ITEM_PADDING * globals::gui_scale;
+    auto item_padding_b = ITEM_PADDING * globals::gui_scale * 2.0f;
 
     // Draw individual item textures in the hotbar
     for(std::size_t i = 0; i < HOTBAR_SIZE; ++i) {
@@ -180,11 +164,8 @@ void hotbar::layout(void)
             continue;
         }
 
-        const auto item_start = ImVec2(window_start.x + i * item_size + item_padding_a, window_start.y + item_padding_a);
+        const auto item_start = ImVec2(background_start.x + i * item_size + item_padding_a, background_start.y + item_padding_a);
         const auto item_end = ImVec2(item_start.x + item_size - item_padding_b, item_start.y + item_size - item_padding_b);
         draw_list->AddImage(info->cached_texture->imgui, item_start, item_end);
     }
-
-    ImGui::End();
-    ImGui::PopFont();
 }

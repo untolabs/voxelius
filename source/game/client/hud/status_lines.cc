@@ -7,8 +7,6 @@
 #include "client/globals.hh"
 
 
-constexpr static ImGuiWindowFlags WINDOW_FLAGS = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoDecoration;
-
 static float line_offsets[STATUS_COUNT];
 static ImFont *line_fonts[STATUS_COUNT];
 
@@ -41,15 +39,7 @@ void status_lines::layout(void)
     line_fonts[STATUS_HOTBAR] = globals::font_chat;
 
     auto viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f));
-    ImGui::SetNextWindowSize(viewport->Size);
-
-    if(!ImGui::Begin("###HUD_StatusLines", nullptr, WINDOW_FLAGS)) {
-        ImGui::End();
-        return;
-    }
-
-    auto draw_list = ImGui::GetWindowDrawList();
+    auto draw_list = ImGui::GetForegroundDrawList();
 
     for(unsigned int i = 0U; i < STATUS_COUNT; ++i) {
         auto offset = line_offsets[i] * globals::gui_scale;
@@ -70,8 +60,6 @@ void status_lines::layout(void)
 
         imdraw_ext::text_shadow(text, pos, color_U32, shadow_U32, font, draw_list);
     }
-
-    ImGui::End();
 }
 
 void status_lines::set(unsigned int line, const std::string &text, const Vec4f &color, float fadeout)

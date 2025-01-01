@@ -40,7 +40,6 @@
 #include "client/gui/language.hh"
 #include "client/gui/main_menu.hh"
 #include "client/gui/message_box.hh"
-#include "client/gui/metrics.hh"
 #include "client/gui/play_menu.hh"
 #include "client/gui/player_list.hh"
 #include "client/gui/progress.hh"
@@ -49,6 +48,7 @@
 
 #include "client/hud/crosshair.hh"
 #include "client/hud/hotbar.hh"
+#include "client/hud/metrics.hh"
 #include "client/hud/status_lines.hh"
 
 #include "client/resource/texture2D.hh"
@@ -310,7 +310,6 @@ void client_game::init(void)
     ImGui::GetIO().IniFilename = nullptr;
 
     toggles::init();
-    metrics::init();
 
     background::init();
 
@@ -330,6 +329,7 @@ void client_game::init(void)
 
     crosshair::init();
     hotbar::init();
+    metrics::init();
     status_lines::init();
 
     globals::gui_keybind_ptr = nullptr;
@@ -573,7 +573,7 @@ void client_game::render(void)
     glBlitFramebuffer(0, 0, scaled_width, scaled_height, 0, 0, globals::width, globals::height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
     if((globals::gui_screen == GUI_SCREEN_NONE) || (globals::gui_screen == GUI_CHAT)) {
-        crosshair::render();
+        crosshair::layout();
     }
 }
 
