@@ -1,6 +1,6 @@
 add_library(mathlib STATIC
     "${CMAKE_CURRENT_LIST_DIR}/box3base.hh"
-    "${CMAKE_CURRENT_LIST_DIR}/box3f.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/box3f.hh"
     "${CMAKE_CURRENT_LIST_DIR}/constexpr.hh"
     "${CMAKE_CURRENT_LIST_DIR}/floathacks.hh"
     "${CMAKE_CURRENT_LIST_DIR}/mat4x4base.hh"
