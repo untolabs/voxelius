@@ -152,9 +152,9 @@ void client_chat::update(void)
 
 void client_chat::layout(void)
 {
-    const ImGuiViewport* viewport = ImGui::GetMainViewport();
-    const ImVec2 window_start = ImVec2(0.0f, 0.0f);
-    const ImVec2 window_size = ImVec2(0.75f * viewport->Size.x, viewport->Size.y);
+    auto viewport = ImGui::GetMainViewport();
+    auto window_start = ImVec2(0.0f, 0.0f);
+    auto window_size = ImVec2(0.75f * viewport->Size.x, viewport->Size.y);
 
     ImGui::SetNextWindowPos(window_start);
     ImGui::SetNextWindowSize(window_size);
@@ -166,15 +166,15 @@ void client_chat::layout(void)
         return;
     }
 
-    const ImVec2 &padding = ImGui::GetStyle().FramePadding;
-    const ImVec2 &spacing = ImGui::GetStyle().ItemSpacing;
-    ImFont *font = ImGui::GetFont();
+    auto &padding = ImGui::GetStyle().FramePadding;
+    auto &spacing = ImGui::GetStyle().ItemSpacing;
+    auto font = ImGui::GetFont();
 
-    ImDrawList *draw_list = ImGui::GetWindowDrawList();
+    auto draw_list = ImGui::GetWindowDrawList();
 
     // The text input widget occupies the bottom part
     // of the chat window, we need to reserve some space for it
-    float ypos = window_size.y - font->FontSize - 2.0f * padding.y - 2.0f * spacing.y;
+    auto ypos = window_size.y - 2.5f * font->FontSize - 2.0f * padding.y - 2.0f * spacing.y;
 
     if(globals::gui_screen == GUI_CHAT) {
         if(needs_focus) {
@@ -189,20 +189,20 @@ void client_chat::layout(void)
 
     if((globals::gui_screen == GUI_SCREEN_NONE) || (globals::gui_screen == GUI_CHAT) || (globals::gui_screen == GUI_DEBUG_WINDOW)) {
         for(auto it = history.crbegin(); it < history.crend(); ++it) {
-            const ImVec2 text_size = ImGui::CalcTextSize(it->text.c_str(), it->text.c_str() + it->text.size(), false, window_size.x);
-            const ImVec2 rect_size = ImVec2(window_size.x, text_size.y + 2.0f * padding.y);
+            auto text_size = ImGui::CalcTextSize(it->text.c_str(), it->text.c_str() + it->text.size(), false, window_size.x);
+            auto rect_size = ImVec2(window_size.x, text_size.y + 2.0f * padding.y);
 
-            const ImVec2 rect_pos = ImVec2(padding.x, ypos - text_size.y - 2.0f * padding.y);
-            const ImVec2 rect_end = ImVec2(rect_pos.x + rect_size.x, rect_pos.y + rect_size.y);
-            const ImVec2 text_pos = ImVec2(rect_pos.x + padding.x, rect_pos.y + padding.y);
+            auto rect_pos = ImVec2(padding.x, ypos - text_size.y - 2.0f * padding.y);
+            auto rect_end = ImVec2(rect_pos.x + rect_size.x, rect_pos.y + rect_size.y);
+            auto text_pos = ImVec2(rect_pos.x + padding.x, rect_pos.y + padding.y);
 
-            const float fadeout_seconds = 10.0f;
-            const float fadeout = std::exp(-1.0f * std::pow(1.0e-6 * static_cast<float>(globals::curtime - it->spawn) / fadeout_seconds, 10.0f));
-            const float rect_alpha = ((globals::gui_screen == GUI_CHAT) ? (0.75f) : (0.50f * fadeout));
-            const float text_alpha = ((globals::gui_screen == GUI_CHAT) ? (1.00f) : (1.00f * fadeout));
+            auto fadeout_seconds = 10.0f;
+            auto fadeout = std::exp(-1.0f * std::pow(1.0e-6 * static_cast<float>(globals::curtime - it->spawn) / fadeout_seconds, 10.0f));
+            auto rect_alpha = ((globals::gui_screen == GUI_CHAT) ? (0.75f) : (0.50f * fadeout));
+            auto text_alpha = ((globals::gui_screen == GUI_CHAT) ? (1.00f) : (1.00f * fadeout));
 
-            const ImU32 rect_col = ImGui::GetColorU32(ImGuiCol_FrameBg, rect_alpha);
-            const ImU32 text_col = ImGui::GetColorU32(ImVec4(it->color.x, it->color.y, it->color.z, it->color.w * text_alpha));
+            auto rect_col = ImGui::GetColorU32(ImGuiCol_FrameBg, rect_alpha);
+            auto text_col = ImGui::GetColorU32(ImVec4(it->color.x, it->color.y, it->color.z, it->color.w * text_alpha));
 
             draw_list->AddRectFilled(rect_pos, rect_end, rect_col);
             draw_list->AddText(font, font->FontSize, text_pos, text_col, it->text.c_str(), it->text.c_str() + it->text.size(), window_size.x);
