@@ -27,7 +27,7 @@ constexpr Box3base<T> Box3base<T>::from_bounds(const Vec3base<T> &min, const Vec
     Box3base<T> result;
     result.min = min;
     result.max = max;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -36,7 +36,7 @@ constexpr Box3base<T> Box3base<T>::from_offset(const Vec3base<T> &offset, const 
     Box3base<T> result;
     result.min = offset;
     result.max = offset + size;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -69,7 +69,7 @@ constexpr Box3base<T> Box3base<T>::combine(const Box3base<T> &abox, const Box3ba
     Box3base<T> result;
     result.min = abox.min;
     result.max = bbox.max;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -78,7 +78,7 @@ constexpr Box3base<T> Box3base<T>::multiply(const Box3base<T> &abox, const Box3b
     Box3base<T> result;
     result.min = bbox.min;
     result.max = abox.max;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -87,5 +87,5 @@ constexpr Box3base<T> Box3base<T>::push(const Box3base<T> &box, const Vec3base<T
     Box3base<T> result;
     result.min = box.min + vector;
     result.max = box.max + vector;
-    return std::move(result);
+    return result;
 }

@@ -85,7 +85,7 @@ constexpr inline Vec3base<T> Vec3base<T>::operator+(const Vec3base<T> &vector) c
     result[0] = this[0][0] + vector[0];
     result[1] = this[0][1] + vector[1];
     result[2] = this[0][2] + vector[2];
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -95,7 +95,7 @@ constexpr inline Vec3base<T> Vec3base<T>::operator-(const Vec3base<T> &vector) c
     result[0] = this[0][0] - vector[0];
     result[1] = this[0][1] - vector[1];
     result[2] = this[0][2] - vector[2];
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -105,7 +105,7 @@ constexpr inline Vec3base<T> Vec3base<T>::operator+(const T scalar) const
     result[0] = this[0][0] + scalar;
     result[1] = this[0][1] + scalar;
     result[2] = this[0][2] + scalar;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -115,7 +115,7 @@ constexpr inline Vec3base<T> Vec3base<T>::operator-(const T scalar) const
     result[0] = this[0][0] - scalar;
     result[1] = this[0][1] - scalar;
     result[2] = this[0][2] - scalar;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -125,7 +125,7 @@ constexpr inline Vec3base<T> Vec3base<T>::operator*(const T scalar) const
     result[0] = this[0][0] * scalar;
     result[1] = this[0][1] * scalar;
     result[2] = this[0][2] * scalar;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -135,7 +135,7 @@ constexpr inline Vec3base<T> Vec3base<T>::operator/(const T scalar) const
     result[0] = this[0][0] / scalar;
     result[1] = this[0][1] / scalar;
     result[2] = this[0][2] / scalar;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -195,65 +195,65 @@ constexpr inline Vec3base<T> &Vec3base<T>::operator/=(const T scalar)
 template<typename T>
 constexpr inline Vec3base<T> Vec3base<T>::dir_forward(void)
 {
-    return std::move(Vec3base<T>(T(0), T(0), T(1)));
+    return Vec3base<T>(T(0), T(0), T(1));
 }
 
 template<typename T>
 constexpr inline Vec3base<T> Vec3base<T>::dir_back(void)
 {
-    return std::move(Vec3base<T>(T(0), T(0), T(-1)));
+    return Vec3base<T>(T(0), T(0), T(-1));
 }
 
 template<typename T>
 constexpr inline Vec3base<T> Vec3base<T>::dir_left(void)
 {
-    return std::move(Vec3base<T>(T(-1), T(0), T(0)));
+    return Vec3base<T>(T(-1), T(0), T(0));
 }
 
 template<typename T>
 constexpr inline Vec3base<T> Vec3base<T>::dir_right(void)
 {
-    return std::move(Vec3base<T>(T(1), T(0), T(0)));
+    return Vec3base<T>(T(1), T(0), T(0));
 }
 
 template<typename T>
 constexpr inline Vec3base<T> Vec3base<T>::dir_down(void)
 {
-    return std::move(Vec3base<T>(T(0), T(-1), T(0)));
+    return Vec3base<T>(T(0), T(-1), T(0));
 }
 
 template<typename T>
 constexpr inline Vec3base<T> Vec3base<T>::dir_up(void)
 {
-    return std::move(Vec3base<T>(T(0), T(1), T(0)));
+    return Vec3base<T>(T(0), T(1), T(0));
 }
 
 template<typename T>
 constexpr inline Vec3base<T> Vec3base<T>::dir_north(void)
 {
-    return std::move(Vec3base<T>::dir_forward());
+    return Vec3base<T>::dir_forward();
 }
 
 template<typename T>
 constexpr inline Vec3base<T> Vec3base<T>::dir_south(void)
 {
-    return std::move(Vec3base<T>::dir_back());
+    return Vec3base<T>::dir_back();
 }
 
 template<typename T>
 constexpr inline Vec3base<T> Vec3base<T>::dir_east(void)
 {
-    return std::move(Vec3base<T>::dir_right());
+    return Vec3base<T>::dir_right();
 }
 
 template<typename T>
 constexpr inline Vec3base<T> Vec3base<T>::dir_west(void)
 {
-    return std::move(Vec3base<T>::dir_left());
+    return Vec3base<T>::dir_left();
 }
 
 template<typename T>
 constexpr inline Vec3base<T> Vec3base<T>::zero(void)
 {
-    return std::move(Vec3base<T>(T(0), T(0), T(0)));
+    return Vec3base<T>(T(0), T(0), T(0));
 }

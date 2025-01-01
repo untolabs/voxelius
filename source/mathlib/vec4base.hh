@@ -74,7 +74,7 @@ constexpr inline Vec4base<T> Vec4base<T>::operator+(const Vec4base<T> &vector) c
     result[1] = this[0][1] + vector[1];
     result[2] = this[0][2] + vector[2];
     result[3] = this[0][3] + vector[3];
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -85,7 +85,7 @@ constexpr inline Vec4base<T> Vec4base<T>::operator-(const Vec4base<T> &vector) c
     result[1] = this[0][1] - vector[1];
     result[2] = this[0][2] - vector[2];
     result[3] = this[0][3] - vector[3];
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -96,7 +96,7 @@ constexpr inline Vec4base<T> Vec4base<T>::operator+(const T scalar) const
     result[1] = this[0][1] + scalar;
     result[2] = this[0][2] + scalar;
     result[3] = this[0][3] + scalar;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -107,7 +107,7 @@ constexpr inline Vec4base<T> Vec4base<T>::operator-(const T scalar) const
     result[1] = this[0][1] - scalar;
     result[2] = this[0][2] - scalar;
     result[3] = this[0][3] - scalar;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -118,7 +118,7 @@ constexpr inline Vec4base<T> Vec4base<T>::operator*(const T scalar) const
     result[1] = this[0][1] * scalar;
     result[2] = this[0][2] * scalar;
     result[3] = this[0][3] * scalar;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -129,7 +129,7 @@ constexpr inline Vec4base<T> Vec4base<T>::operator/(const T scalar) const
     result[1] = this[0][1] / scalar;
     result[2] = this[0][2] / scalar;
     result[3] = this[0][3] / scalar;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>

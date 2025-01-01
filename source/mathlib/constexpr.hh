@@ -24,6 +24,8 @@ constexpr static inline const T max(const T x, const T y);
 template<typename T>
 constexpr static inline const T min(const T x, const T y);
 template<typename T>
+constexpr static inline const T mod_signed(const T x, const T m);
+template<typename T>
 constexpr static inline const T pow2(const T x);
 template<typename T>
 constexpr static inline const T radians(const T x);
@@ -119,6 +121,17 @@ constexpr static inline const T cxpr::min(const T x, const T y)
     if(x > y)
         return y;
     return x;
+}
+
+template<typename T>
+constexpr static inline const T cxpr::mod_signed(const T x, const T m)
+{
+    static_assert(std::is_signed_v<T>);
+    static_assert(std::is_integral_v<T>);
+    const T result = static_cast<T>(x % m);
+    if(result < T(0))
+        return result + m;
+    return result;
 }
 
 template<typename T>

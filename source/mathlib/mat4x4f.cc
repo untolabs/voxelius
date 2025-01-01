@@ -26,7 +26,7 @@ Mat4x4f Mat4x4f::model_rotate(const Mat4x4f &model, const float angle, const Vec
     result[1] = model[0] * rotmat[1][0] + model[1] * rotmat[1][1] + model[2] * rotmat[1][2];
     result[2] = model[0] * rotmat[2][0] + model[1] * rotmat[2][1] + model[2] * rotmat[2][2];
     result[3] = model[3];
-    return std::move(result);
+    return result;
 }
 
 Mat4x4f Mat4x4f::proj_ortho(float left, float right, float bottom, float top, float z_near, float z_far)
@@ -38,7 +38,7 @@ Mat4x4f Mat4x4f::proj_ortho(float left, float right, float bottom, float top, fl
     result[3][0] = -1.0f * (right + left) / (right - left);
     result[3][1] = -1.0f * (top + bottom) / (top - bottom);
     result[3][2] = -1.0f * z_near / (z_far - z_near);
-    return std::move(result);
+    return result;
 }
 
 Mat4x4f Mat4x4f::proj_persp(float y_fov, float aspect, float z_near, float z_far)
@@ -52,7 +52,7 @@ Mat4x4f Mat4x4f::proj_persp(float y_fov, float aspect, float z_near, float z_far
     result[2][2] = -1.0f * (z_far + z_near) * inv_z_delta;
     result[2][3] = -1.0f;
     result[3][2] = -2.0f * z_far * z_near * inv_z_delta;
-    return std::move(result);
+    return result;
 }
 
 Mat4x4f Mat4x4f::view_psrc(const Vec3f &position, const Vec3angles &angles)
@@ -73,5 +73,5 @@ Mat4x4f Mat4x4f::view_psrc(const Vec3f &position, const Vec3angles &angles)
     result[1][2] = -forward[1];
     result[2][2] = -forward[2];
     result[3][2] = forward[0] * position[0] + forward[1] * position[1] + forward[2] * position[2];
-    return std::move(result);
+    return result;
 }

@@ -13,16 +13,16 @@ ChunkCoord VoxelCoord::to_chunk(const VoxelCoord &vvec)
     result[0] = vvec[0] >> CHUNK_SIZE_LOG2;
     result[1] = vvec[1] >> CHUNK_SIZE_LOG2;
     result[2] = vvec[2] >> CHUNK_SIZE_LOG2;
-    return std::move(result);
+    return result;
 }
 
 LocalCoord VoxelCoord::to_local(const VoxelCoord &vvec)
 {
     LocalCoord result = {};
-    result[0] = vvec[0] % CHUNK_SIZE;
-    result[1] = vvec[1] % CHUNK_SIZE;
-    result[2] = vvec[2] % CHUNK_SIZE;
-    return std::move(result);
+    result[0] = cxpr::mod_signed<VoxelCoord::value_type>(vvec[0], CHUNK_SIZE);
+    result[1] = cxpr::mod_signed<VoxelCoord::value_type>(vvec[1], CHUNK_SIZE);
+    result[2] = cxpr::mod_signed<VoxelCoord::value_type>(vvec[2], CHUNK_SIZE);
+    return result;
 }
 
 WorldCoord VoxelCoord::to_world(const VoxelCoord &vvec)
@@ -31,10 +31,10 @@ WorldCoord VoxelCoord::to_world(const VoxelCoord &vvec)
     result.chunk[0] = vvec[0] >> CHUNK_SIZE_LOG2;
     result.chunk[1] = vvec[1] >> CHUNK_SIZE_LOG2;
     result.chunk[2] = vvec[2] >> CHUNK_SIZE_LOG2;
-    result.local[0] = static_cast<float>(vvec[0] % CHUNK_SIZE);
-    result.local[1] = static_cast<float>(vvec[1] % CHUNK_SIZE);
-    result.local[2] = static_cast<float>(vvec[2] % CHUNK_SIZE);
-    return std::move(result);
+    result.local[0] = static_cast<float>(cxpr::mod_signed<VoxelCoord::value_type>(vvec[0], CHUNK_SIZE));
+    result.local[1] = static_cast<float>(cxpr::mod_signed<VoxelCoord::value_type>(vvec[1], CHUNK_SIZE));
+    result.local[2] = static_cast<float>(cxpr::mod_signed<VoxelCoord::value_type>(vvec[2], CHUNK_SIZE));
+    return result;
 }
 
 Vec3f VoxelCoord::to_vec3f(const VoxelCoord &vvec)
@@ -43,5 +43,5 @@ Vec3f VoxelCoord::to_vec3f(const VoxelCoord &vvec)
     result[0] = static_cast<float>(vvec[0]);
     result[1] = static_cast<float>(vvec[1]);
     result[2] = static_cast<float>(vvec[2]);
-    return std::move(result);
+    return result;
 }

@@ -19,7 +19,7 @@ Vec3f Vec3f::normalized(const Vec3f &vector)
     result[0] = multip * vector[0];
     result[1] = multip * vector[1];
     result[2] = multip * vector[2];
-    return std::move(result);
+    return result;
 }
 
 float Vec3f::normalize(Vec3f &vector)

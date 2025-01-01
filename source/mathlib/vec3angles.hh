@@ -40,7 +40,7 @@ constexpr inline Vec3angles Vec3angles::degrees(const Vec3angles &angles)
     result[0] = cxpr::degrees(angles[0]);
     result[1] = cxpr::degrees(angles[1]);
     result[2] = cxpr::degrees(angles[2]);
-    return std::move(result);
+    return result;
 }
 
 constexpr inline Vec3angles Vec3angles::radians(const Vec3angles &angles)
@@ -49,5 +49,5 @@ constexpr inline Vec3angles Vec3angles::radians(const Vec3angles &angles)
     result[0] = cxpr::radians(angles[0]);
     result[1] = cxpr::radians(angles[1]);
     result[2] = cxpr::radians(angles[2]);
-    return std::move(result);
+    return result;
 }

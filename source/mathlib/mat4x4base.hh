@@ -46,7 +46,7 @@ constexpr inline Vec4base<T> Mat4x4base<T>::product(const Mat4x4base<T> &matrix,
     result[1] = matrix[0][1] * vector[0] + matrix[1][1] * vector[1] + matrix[2][1] * vector[2] + matrix[3][1];
     result[2] = matrix[0][2] * vector[0] + matrix[1][2] * vector[1] + matrix[2][2] * vector[2] + matrix[3][2];
     result[3] = matrix[0][3] * vector[0] + matrix[1][3] * vector[1] + matrix[2][3] * vector[2] + matrix[3][3];
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -57,7 +57,7 @@ constexpr inline Vec4base<T> Mat4x4base<T>::product(const Mat4x4base<T> &matrix,
     result[1] = matrix[0][1] * vector[0] + matrix[1][1] * vector[1] + matrix[2][1] * vector[2] + matrix[3][1] * vector[3];
     result[2] = matrix[0][2] * vector[0] + matrix[1][2] * vector[1] + matrix[2][2] * vector[2] + matrix[3][2] * vector[3];
     result[3] = matrix[0][3] * vector[0] + matrix[1][3] * vector[1] + matrix[2][3] * vector[2] + matrix[3][3] * vector[3];
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -68,7 +68,7 @@ constexpr inline Mat4x4base<T> Mat4x4base<T>::product(const Mat4x4base<T> &amat,
 	result[1] = amat[0] * bmat[1][0] + amat[1] * bmat[1][1] + amat[2] * bmat[1][2] + amat[3] * bmat[1][3];
 	result[2] = amat[0] * bmat[2][0] + amat[1] * bmat[2][1] + amat[2] * bmat[2][2] + amat[3] * bmat[2][3];
 	result[3] = amat[0] * bmat[3][0] + amat[1] * bmat[3][1] + amat[2] * bmat[3][2] + amat[3] * bmat[3][3];
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -79,7 +79,7 @@ constexpr inline Mat4x4base<T> Mat4x4base<T>::identity(void)
     result[1] = Vec4base<T>(T(0), T(1), T(0), T(0));
     result[2] = Vec4base<T>(T(0), T(0), T(1), T(0));
     result[3] = Vec4base<T>(T(0), T(0), T(0), T(1));
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -90,5 +90,5 @@ constexpr inline Mat4x4base<T> Mat4x4base<T>::zero(void)
     result[1] = Vec4base<T>(T(0), T(0), T(0), T(0));
     result[2] = Vec4base<T>(T(0), T(0), T(0), T(0));
     result[3] = Vec4base<T>(T(0), T(0), T(0), T(0));
-    return std::move(result);
+    return result;
 }

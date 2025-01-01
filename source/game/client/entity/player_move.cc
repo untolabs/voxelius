@@ -45,7 +45,7 @@ static Vec3f accelerate(const Vec3f &wish_dir, const Vec3f &velocity, float wish
     auto result = Vec3f(velocity);
     result[0] += accel_speed * wish_dir[0];
     result[2] += accel_speed * wish_dir[2];
-    return std::move(result);
+    return result;
 }
 
 static Vec3f air_move(const Vec3f &wish_dir, const Vec3f &velocity)

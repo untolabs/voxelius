@@ -53,90 +53,90 @@ constexpr inline float Vec4f::dot(const Vec4f &avec, const Vec4f &bvec)
 
 constexpr inline Vec4f Vec4f::black(void)
 {
-    return std::move(Vec4f(0.00f, 0.00f, 0.00f, 1.00f));
+    return Vec4f(0.00f, 0.00f, 0.00f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::blue(void)
 {
-    return std::move(Vec4f(0.00f, 0.00f, 1.00f, 1.00f));
+    return Vec4f(0.00f, 0.00f, 1.00f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::brown(void)
 {
-    return std::move(Vec4f(0.50f, 0.50f, 0.00f, 1.00f));
+    return Vec4f(0.50f, 0.50f, 0.00f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::cyan(void)
 {
-    return std::move(Vec4f(0.00f, 1.00f, 1.00f, 1.00f));
+    return Vec4f(0.00f, 1.00f, 1.00f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::dark_blue(void)
 {
-    return std::move(Vec4f(0.00f, 0.00f, 0.50f, 1.00f));
+    return Vec4f(0.00f, 0.00f, 0.50f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::dark_cyan(void)
 {
-    return std::move(Vec4f(0.00f, 0.50f, 0.50f, 1.00f));
+    return Vec4f(0.00f, 0.50f, 0.50f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::dark_green(void)
 {
-    return std::move(Vec4f(0.00f, 0.50f, 0.00f, 1.00f));
+    return Vec4f(0.00f, 0.50f, 0.00f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::dark_magenta(void)
 {
-    return std::move(Vec4f(0.50f, 0.00f, 0.50f, 1.00f));
+    return Vec4f(0.50f, 0.00f, 0.50f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::dark_red(void)
 {
-    return std::move(Vec4f(0.50f, 0.00f, 0.00f, 1.00f));
+    return Vec4f(0.50f, 0.00f, 0.00f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::gray(void)
 {
-    return std::move(Vec4f(0.50f, 0.50f, 0.50f, 1.00f));
+    return Vec4f(0.50f, 0.50f, 0.50f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::green(void)
 {
-    return std::move(Vec4f(0.00f, 1.00f, 0.00f, 1.00f));
+    return Vec4f(0.00f, 1.00f, 0.00f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::light_gray(void)
 {
-    return std::move(Vec4f(0.80f, 0.80f, 0.80f, 1.00f));
+    return Vec4f(0.80f, 0.80f, 0.80f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::light_blue(void)
 {
-    return std::move(Vec4f(0.68f, 0.85f, 0.90f, 1.00f));
+    return Vec4f(0.68f, 0.85f, 0.90f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::magenta(void)
 {
-    return std::move(Vec4f(1.00f, 0.00f, 1.00f, 1.00f));
+    return Vec4f(1.00f, 0.00f, 1.00f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::red(void)
 {
-    return std::move(Vec4f(1.00f, 0.00f, 0.00f, 1.00f));
+    return Vec4f(1.00f, 0.00f, 0.00f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::transparent(void)
 {
-    return std::move(Vec4f(0.00f, 0.00f, 0.00f, 0.00f));
+    return Vec4f(0.00f, 0.00f, 0.00f, 0.00f);
 }
 
 constexpr inline Vec4f Vec4f::white(void)
 {
-    return std::move(Vec4f(1.00f, 1.00f, 1.00f, 1.00f));
+    return Vec4f(1.00f, 1.00f, 1.00f, 1.00f);
 }
 
 constexpr inline Vec4f Vec4f::yellow(void)
 {
-    return std::move(Vec4f(1.00f, 1.00f, 0.00f, 1.00f));
+    return Vec4f(1.00f, 1.00f, 0.00f, 1.00f);
 }

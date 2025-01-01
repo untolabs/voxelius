@@ -65,7 +65,7 @@ constexpr inline Vec2base<T> Vec2base<T>::operator+(const Vec2base<T> &vector) c
     Vec2base<T> result = {};
     result[0] = this[0][0] + vector[0];
     result[1] = this[0][1] + vector[1];
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -74,7 +74,7 @@ constexpr inline Vec2base<T> Vec2base<T>::operator-(const Vec2base<T> &vector) c
     Vec2base<T> result = {};
     result[0] = this[0][0] - vector[0];
     result[1] = this[0][1] - vector[1];
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -83,7 +83,7 @@ constexpr inline Vec2base<T> Vec2base<T>::operator+(const T scalar) const
     Vec2base<T> result = {};
     result[0] = this[0][0] + scalar;
     result[1] = this[0][1] + scalar;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -92,7 +92,7 @@ constexpr inline Vec2base<T> Vec2base<T>::operator-(const T scalar) const
     Vec2base<T> result = {};
     result[0] = this[0][0] - scalar;
     result[1] = this[0][1] - scalar;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -101,7 +101,7 @@ constexpr inline Vec2base<T> Vec2base<T>::operator*(const T scalar) const
     Vec2base<T> result = {};
     result[0] = this[0][0] * scalar;
     result[1] = this[0][1] * scalar;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -110,7 +110,7 @@ constexpr inline Vec2base<T> Vec2base<T>::operator/(const T scalar) const
     Vec2base<T> result = {};
     result[0] = this[0][0] / scalar;
     result[1] = this[0][1] / scalar;
-    return std::move(result);
+    return result;
 }
 
 template<typename T>
@@ -164,5 +164,5 @@ constexpr inline Vec2base<T> &Vec2base<T>::operator/=(const T scalar)
 template<typename T>
 constexpr inline Vec2base<T> Vec2base<T>::zero(void)
 {
-    return std::move(Vec2base<T>(T(0), T(0)));
+    return Vec2base<T>(T(0), T(0));
 }

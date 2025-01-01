@@ -33,7 +33,7 @@ constexpr inline Vec3f Vec3f::cross(const Vec3f &avec, const Vec3f &bvec)
     result[0] = avec[1] * bvec[2] - avec[2] * bvec[1];
     result[1] = avec[2] * bvec[0] - avec[0] * bvec[2];
     result[2] = avec[0] * bvec[1] - avec[1] * bvec[0];
-    return std::move(result);
+    return result;
 }
 
 constexpr inline float Vec3f::dot(const Vec3f &avec, const Vec3f &bvec)

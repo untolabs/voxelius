@@ -16,7 +16,7 @@ Vec3angles Vec3angles::wrap_180(const Vec3angles &angles)
     result[1] = ((result[1] < 0.0f) ? (result[1] + A360) : result[1]) - A180;
     result[2] = ((result[2] < 0.0f) ? (result[2] + A360) : result[2]) - A180;
 
-    return std::move(result);
+    return result;
 }
 
 Vec3angles Vec3angles::wrap_360(const Vec3angles &angles)
@@ -27,7 +27,7 @@ Vec3angles Vec3angles::wrap_360(const Vec3angles &angles)
     result[0] = std::fmod(std::fmod(angles[0], A360) + A360, A360);
     result[1] = std::fmod(std::fmod(angles[1], A360) + A360, A360);
     result[2] = std::fmod(std::fmod(angles[2], A360) + A360, A360);
-    return std::move(result);
+    return result;
 }
 
 Vec3f Vec3angles::cos(const Vec3angles &angles)
@@ -36,7 +36,7 @@ Vec3f Vec3angles::cos(const Vec3angles &angles)
     result[0] = std::cos(angles[0]);
     result[1] = std::cos(angles[1]);
     result[2] = std::cos(angles[2]);
-    return std::move(result);
+    return result;
 }
 
 Vec3f Vec3angles::sin(const Vec3angles &angles)
@@ -45,7 +45,7 @@ Vec3f Vec3angles::sin(const Vec3angles &angles)
     result[0] = std::sin(angles[0]);
     result[1] = std::sin(angles[1]);
     result[2] = std::sin(angles[2]);
-    return std::move(result);
+    return result;
 }
 
 void Vec3angles::vectors(const Vec3angles &angles, Vec3f &forward)

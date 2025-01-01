@@ -102,7 +102,7 @@ std::string PacketBuffer::read_string(PacketBuffer &buffer)
         buffer.read_position += 1U;
     }
 
-    return std::move(result);
+    return result;
 }
 
 void PacketBuffer::write_FP32(PacketBuffer &buffer, float value)

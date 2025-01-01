@@ -31,5 +31,5 @@ constexpr inline static ChunkQuad make_chunk_quad(const Vec3f &position, const V
     result[1] |= (0x000007FFU & static_cast<std::uint32_t>(texture)) << 17U;
     result[1] |= (0x0000001FU & static_cast<std::uint32_t>(frames)) << 12U;
 
-    return std::move(result);
+    return result;
 }
