@@ -335,7 +335,10 @@ void session::sp::load_world(const std::string &universe_directory)
     unloader::init_late(view::max_distance);
 
     globals::player = globals::registry.create();
+
     entity_factory::create_player(globals::player, true, WorldCoord());
+
+    set_fixed_tickrate(protocol::TICKRATE);
 
     globals::gui_screen = GUI_SCREEN_NONE;
 }

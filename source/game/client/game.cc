@@ -447,6 +447,8 @@ void client_game::fixed_update(void)
 
         VelocityComponent::fixed_update();
 
+        TransformComponent::fixed_update();
+
         GravityComponent::fixed_update();
     }
 }
@@ -469,10 +471,6 @@ void client_game::update(void)
 #endif /* ENABLE_EXPERIMENTS */
 
     interpolation::update();
-
-    if(globals::registry.valid(globals::player)) {
-        TransformComponent::fixed_update();
-    }
 
     player_target::update();
 
