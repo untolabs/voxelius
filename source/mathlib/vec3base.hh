@@ -54,6 +54,9 @@ public:
 
 public:
     constexpr static Vec3base<T> zero(void);
+
+    template<typename DT>
+    constexpr static Vec3base<T> zero_except(const DT dim, const T value);
 };
 
 template<typename T>
@@ -256,4 +259,14 @@ template<typename T>
 constexpr inline Vec3base<T> Vec3base<T>::zero(void)
 {
     return Vec3base<T>(T(0), T(0), T(0));
+}
+
+template<typename T>
+template<typename DT>
+constexpr inline Vec3base<T> Vec3base<T>::zero_except(const DT dim, const T value)
+{
+    static_assert(std::is_integral_v<DT>);
+    Vec3base<T> result = Vec3base<T>::zero();
+    result[dim] = value;
+    return result;
 }
