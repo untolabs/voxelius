@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15 FATAL_ERROR)
-project(voxelius LANGUAGES C CXX VERSION 0.0.1.2453)
+project(voxelius LANGUAGES C CXX VERSION 0.0.1.2501)
 
 set(CPACK_PACKAGE_NAME "voxelius")
 set(CPACK_PACKAGE_VENDOR "untolabs")
