@@ -9,8 +9,11 @@
 #include "common/crc64.hh"
 #include "common/epoch.hh"
 
+#include "shared/entity/collision.hh"
+#include "shared/entity/gravity.hh"
 #include "shared/entity/head.hh"
 #include "shared/entity/player.hh"
+#include "shared/entity/stasis.hh"
 #include "shared/entity/transform.hh"
 #include "shared/entity/velocity.hh"
 
@@ -121,7 +124,15 @@ void server_game::deinit(void)
 
 void server_game::fixed_update(void)
 {
+    CollisionComponent::fixed_update();
 
+    VelocityComponent::fixed_update();
+
+    TransformComponent::fixed_update();
+
+    GravityComponent::fixed_update();
+
+    StasisComponent::fixed_update();
 }
 
 void server_game::fixed_update_late(void)

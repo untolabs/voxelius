@@ -14,6 +14,7 @@
 
 #include "shared/entity/collision.hh"
 #include "shared/entity/gravity.hh"
+#include "shared/entity/stasis.hh"
 #include "shared/entity/transform.hh"
 #include "shared/entity/velocity.hh"
 
@@ -450,6 +451,8 @@ void client_game::fixed_update(void)
         TransformComponent::fixed_update();
 
         GravityComponent::fixed_update();
+
+        StasisComponent::fixed_update();
     }
 }
 

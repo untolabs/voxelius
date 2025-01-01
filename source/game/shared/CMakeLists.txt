@@ -8,6 +8,8 @@ add_library(shared STATIC
     "${CMAKE_CURRENT_LIST_DIR}/entity/gravity.hh"
     "${CMAKE_CURRENT_LIST_DIR}/entity/head.hh"
     "${CMAKE_CURRENT_LIST_DIR}/entity/player.hh"
+    "${CMAKE_CURRENT_LIST_DIR}/entity/stasis.cc"
+    "${CMAKE_CURRENT_LIST_DIR}/entity/stasis.hh"
     "${CMAKE_CURRENT_LIST_DIR}/entity/transform.cc"
     "${CMAKE_CURRENT_LIST_DIR}/entity/transform.hh"
     "${CMAKE_CURRENT_LIST_DIR}/entity/velocity.cc"
