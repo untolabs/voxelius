@@ -5,5 +5,5 @@ namespace background
 {
 void init(void);
 void deinit(void);
-void render(void);
+void layout(void);
 } // namespace background

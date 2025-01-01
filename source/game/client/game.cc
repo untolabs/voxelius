@@ -580,7 +580,7 @@ void client_game::render(void)
 void client_game::layout(void)
 {
     if(!globals::registry.valid(globals::player)) {
-        background::render();
+        background::layout();
     }
 
     if(!globals::gui_screen || (globals::gui_screen == GUI_CHAT) || (globals::gui_screen == GUI_DEBUG_WINDOW)) {
