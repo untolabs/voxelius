@@ -18,6 +18,9 @@ struct Metadata final {
 
 static int terrain_variation = 64;
 static int bottommost_chunk = -4;
+static bool enable_surface = true;
+static bool enable_carvers = true;
+static bool enable_features = true;
 
 static emhash8::HashMap<ChunkCoord2D, Metadata> metadata_map = {};
 static std::mt19937_64 twister = {};
@@ -198,6 +201,9 @@ void worldgen::overworld::setup(Config &config)
 {
     Config::add(config, "overworld.terrain_variation", terrain_variation);
     Config::add(config, "overworld.bottommost_chunk", bottommost_chunk);
+    Config::add(config, "overworld.enable_surface", enable_surface);
+    Config::add(config, "overworld.enable_carvers", enable_carvers);
+    Config::add(config, "overworld.enable_features", enable_features);
 }
 
 void worldgen::overworld::setup_late(std::uint64_t seed)
@@ -234,9 +240,10 @@ bool worldgen::overworld::generate(const ChunkCoord &cpos, VoxelStorage &voxels)
         return false;
 
     generate_terrain(cpos, voxels);
-    generate_surface(cpos, voxels);
-    generate_carvers(cpos, voxels);
-    //generate_features(cpos, voxels);
+
+    if(enable_surface) generate_surface(cpos, voxels);
+    if(enable_carvers) generate_carvers(cpos, voxels);
+    if(enable_features) generate_features(cpos, voxels);
 
     return true;
 }
