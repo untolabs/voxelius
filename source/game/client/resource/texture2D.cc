@@ -45,7 +45,7 @@ std::shared_ptr<const Texture2D> resource::load<Texture2D>(const std::string &pa
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         else glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
-        new_texture->imgui = reinterpret_cast<ImTextureID>(static_cast<std::uintptr_t>(new_texture->handle));
+        new_texture->imgui = static_cast<ImTextureID>(new_texture->handle);
         new_texture->height = image->height;
         new_texture->width = image->width;
 

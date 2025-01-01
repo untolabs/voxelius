@@ -39,7 +39,7 @@ struct WorkerContext final {
     std::array<VoxelStorage, NUM_CACHED_CPOS> cache {};
     std::vector<QuadBuilder> quads_nb {};
     std::vector<QuadBuilder> quads_b {};
-    std::shared_future<bool> future {};
+    std::future<void> future {};
     bool is_cancelled {};
     ChunkCoord coord {};
 };
@@ -289,7 +289,7 @@ constexpr static const size_t MESHER_THREADS_COUNT = 2;
 constexpr static const size_t MESHER_TASKS_PER_FRAME = 64;
 #endif
 
-static thread_pool workers_pool = thread_pool(MESHER_THREADS_COUNT);
+static BS::thread_pool workers_pool = BS::thread_pool(MESHER_THREADS_COUNT);
 static std::unordered_map<ChunkCoord, std::unique_ptr<WorkerContext>> workers = {};
 
 // Bogus internal flag component
@@ -377,7 +377,7 @@ void chunk_mesher::deinit(void)
 {
     for(auto &worker : workers)
         worker.second->is_cancelled = true;
-    workers_pool.wait_for_tasks();
+    workers_pool.wait();
     workers.clear();
 }
 
@@ -438,7 +438,7 @@ void chunk_mesher::update(void)
             cache_chunk(worker.get(), chunk.coord + ChunkCoord::dir_up());
             cache_chunk(worker.get(), chunk.coord + ChunkCoord::dir_down());
 
-            worker->future = workers_pool.submit(std::bind(&process, worker.get()));
+            worker->future = workers_pool.submit_task(std::bind(&process, worker.get()));
 
             enqueued += 1U;
         }

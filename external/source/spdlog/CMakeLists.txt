@@ -12,3 +12,11 @@ set_target_properties(spdlog PROPERTIES FOLDER External)
 
 find_package(Threads REQUIRED)
 target_link_libraries(spdlog PUBLIC Threads::Threads)
+
+if(MSVC)
+    # There seems to be a compile-time check merged into the
+    # master fmtlib branch that has been pulled into spdlog as well
+    # that seems to fix an MSVC bug (https://github.com/fmtlib/fmt/pull/2297)
+    # FIXME: should I bundle fmtlib as a separate dependency?
+    target_compile_options(spdlog PUBLIC /utf-8)
+endif()

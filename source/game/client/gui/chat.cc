@@ -168,7 +168,7 @@ void client_chat::layout(void)
 
     const ImVec2 &padding = ImGui::GetStyle().FramePadding;
     const ImVec2 &spacing = ImGui::GetStyle().ItemSpacing;
-    const ImFont *font = ImGui::GetFont();
+    ImFont *font = ImGui::GetFont();
 
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
 

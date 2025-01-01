@@ -60,7 +60,7 @@ void player_list::layout(void)
 
     const ImVec2 &padding = ImGui::GetStyle().FramePadding;
     const ImVec2 &spacing = ImGui::GetStyle().ItemSpacing;
-    const ImFont *font = globals::font_chat;
+    ImFont *font = globals::font_chat;
 
     // Figure out the maximum username size
     for(const std::string &username : usernames) {

@@ -2,7 +2,7 @@
 #include "client/precompiled.hh"
 #include "client/gui/metrics.hh"
 
-#include "client/gui/text_shadow.hh"
+#include "client/gui/imdraw_ext.hh"
 
 #include "client/game.hh"
 #include "client/globals.hh"
@@ -43,40 +43,40 @@ void metrics::layout(void)
     const auto ui_frametime = io.DeltaTime * 1000.0f;
 
     if(client_game::vertical_sync) {
-        text_shadow::layout(fmt::format("{:.02f} FPS [{:.02f} ms] [VSYNC]", ui_framerate, ui_frametime),
+        imdraw_ext::text_shadow(fmt::format("{:.02f} FPS [{:.02f} ms] [VSYNC]", ui_framerate, ui_frametime),
             position, text_U32, shadow_U32, globals::font_debug, draw_list);
         position.y += 1.5f * globals::font_debug->FontSize;
     }
     else {
-        text_shadow::layout(fmt::format("{:.02f} FPS [{:.02f} ms]", ui_framerate, ui_frametime),
+        imdraw_ext::text_shadow(fmt::format("{:.02f} FPS [{:.02f} ms]", ui_framerate, ui_frametime),
             position, text_U32, shadow_U32, globals::font_debug, draw_list);
         position.y += 1.5f * globals::font_debug->FontSize;
     }
 
-    text_shadow::layout(fmt::format("World drawcalls: {}", globals::num_drawcalls),
+    imdraw_ext::text_shadow(fmt::format("World drawcalls: {}", globals::num_drawcalls),
         position, text_U32, shadow_U32, globals::font_debug, draw_list);
     position.y += 1.5f * globals::font_debug->FontSize;
 
-    text_shadow::layout(fmt::format("World triangles: {}", globals::num_triangles),
+    imdraw_ext::text_shadow(fmt::format("World triangles: {}", globals::num_triangles),
         position, text_U32, shadow_U32, globals::font_debug, draw_list);
     position.y += 1.5f * globals::font_debug->FontSize;
 
-    text_shadow::layout(fmt::format("GL_VERSION: {}", gl_version),
+    imdraw_ext::text_shadow(fmt::format("GL_VERSION: {}", gl_version),
         position, text_U32, shadow_U32, globals::font_debug, draw_list);
     position.y += 1.5f * globals::font_debug->FontSize;
     
-    text_shadow::layout(fmt::format("GL_RENDERER: {}", gl_renderer),
+    imdraw_ext::text_shadow(fmt::format("GL_RENDERER: {}", gl_renderer),
         position, text_U32, shadow_U32, globals::font_debug, draw_list);
     position.y += 1.5f * globals::font_debug->FontSize;
 
     const ChunkCoord &cpos = view::position.chunk;
     const VoxelCoord vpos = WorldCoord::to_voxel(view::position);
 
-    text_shadow::layout(fmt::format("voxel: [{} {} {}]", vpos[0], vpos[1], vpos[2]),
+    imdraw_ext::text_shadow(fmt::format("voxel: [{} {} {}]", vpos[0], vpos[1], vpos[2]),
         position, text_U32, shadow_U32, globals::font_debug, draw_list);
     position.y += 1.5f * globals::font_debug->FontSize;
 
-    text_shadow::layout(fmt::format("chunk: [{} {} {}]", cpos[0], cpos[1], cpos[2]),
+    imdraw_ext::text_shadow(fmt::format("chunk: [{} {} {}]", cpos[0], cpos[1], cpos[2]),
         position, text_U32, shadow_U32, globals::font_debug, draw_list);
     position.y += 1.5f * globals::font_debug->FontSize;
 

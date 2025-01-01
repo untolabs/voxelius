@@ -26,6 +26,8 @@
 #include <utility>
 #include <vector>
 
+#include <BS_thread_pool.hpp>
+
 // FIXME: including hash_set8.hpp is fucked up whenever
 // hash_table8.hpp is included. It doesn't even compile
 // possibly due some function re-definitions. Too bad!
@@ -58,8 +60,6 @@
 
 #include <stb_image.h>
 #include <stb_image_write.h>
-
-#include <thread_pool.hpp>
 
 #if defined(_WIN32)
 #define WIN32_LEAN_AND_MEAN
