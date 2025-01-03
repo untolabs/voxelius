@@ -12,7 +12,7 @@
 #include "shared/globals.hh"
 
 
-void entity_factory::create_player(entt::entity entity, bool interpolated, const WorldCoord &location)
+void shared_entity_factory::create_player(entt::entity entity)
 {
     spdlog::debug("entity_factory: assigning player components to {}", static_cast<std::uint64_t>(entity));
 
@@ -26,21 +26,12 @@ void entity_factory::create_player(entt::entity entity, bool interpolated, const
     head.angles = Vec3angles::zero();
     head.position = Vec3f::zero();
 
-    if(interpolated) {
-        globals::registry.emplace_or_replace<HeadComponentIntr>(entity, head);
-        globals::registry.emplace_or_replace<HeadComponentPrev>(entity, head);
-    }
-
     globals::registry.emplace_or_replace<PlayerComponent>(entity);
 
     auto &transform = globals::registry.emplace_or_replace<TransformComponent>(entity);
     transform.angles = Vec3angles::zero();
-    transform.position = location;
-
-    if(interpolated) {
-        globals::registry.emplace_or_replace<TransformComponentIntr>(entity, transform);
-        globals::registry.emplace_or_replace<TransformComponentPrev>(entity, transform);
-    }
+    transform.position.chunk = ChunkCoord::zero();
+    transform.position.local = Vec3f::zero();
 
     auto &velocity = globals::registry.emplace_or_replace<VelocityComponent>(entity);
     velocity.angular = Vec3angles::zero();

@@ -20,7 +20,7 @@
 
 static void on_entity_transform_packet(const protocol::EntityTransform &packet)
 {
-    if(Session *session = sessions::find(packet.peer)) {
+    if(auto session = sessions::find(packet.peer)) {
         if(globals::registry.valid(session->player_entity)) {
             auto &component = globals::registry.emplace_or_replace<TransformComponent>(session->player_entity);
             component.position = packet.coord;
@@ -35,7 +35,7 @@ static void on_entity_transform_packet(const protocol::EntityTransform &packet)
 
 static void on_entity_velocity_packet(const protocol::EntityVelocity &packet)
 {
-    if(Session *session = sessions::find(packet.peer)) {
+    if(auto session = sessions::find(packet.peer)) {
         if(globals::registry.valid(session->player_entity)) {
             auto &component = globals::registry.emplace_or_replace<VelocityComponent>(session->player_entity);
             component.angular = packet.angular;
@@ -51,7 +51,7 @@ static void on_entity_velocity_packet(const protocol::EntityVelocity &packet)
 
 static void on_entity_head_packet(const protocol::EntityHead &packet)
 {
-    if(Session *session = sessions::find(packet.peer)) {
+    if(auto session = sessions::find(packet.peer)) {
         if(globals::registry.valid(session->player_entity)) {
             auto &component = globals::registry.emplace_or_replace<HeadComponent>(session->player_entity);
             component.angles = packet.angles;
@@ -84,7 +84,7 @@ static void on_set_voxel_packet(const protocol::SetVoxel &packet)
 
 static void on_request_chunk_packet(const protocol::RequestChunk &packet)
 {
-    if(auto session = reinterpret_cast<const Session *>(packet.peer->data)) {
+    if(auto session = sessions::find(packet.peer)) {
         if(!globals::registry.valid(session->player_entity)) {
             // De-spawned sessions cannot request
             // chunks from the server; that's cheating!!!
@@ -105,6 +105,24 @@ static void on_request_chunk_packet(const protocol::RequestChunk &packet)
     }
 }
 
+static void on_entity_sound_packet(const protocol::EntitySound &packet)
+{
+    if(auto session = sessions::find(packet.peer)) {
+        if(!globals::registry.valid(session->player_entity)) {
+            // De-spawned sessions cannot play sounds
+            return;
+        }
+
+        protocol::EntitySound response = {};
+        response.entity = session->player_entity;
+        response.sound = packet.sound;
+        response.looping = packet.looping;
+        response.pitch = packet.pitch;
+        response.gain = packet.gain;
+        protocol::send(packet.peer, globals::server_host, response);
+    }
+}
+
 void server_recieve::init(void)
 {
     globals::dispatcher.sink<protocol::EntityTransform>().connect<&on_entity_transform_packet>();
@@ -112,4 +130,5 @@ void server_recieve::init(void)
     globals::dispatcher.sink<protocol::EntityHead>().connect<&on_entity_head_packet>();
     globals::dispatcher.sink<protocol::SetVoxel>().connect<&on_set_voxel_packet>();
     globals::dispatcher.sink<protocol::RequestChunk>().connect<&on_request_chunk_packet>();
+    globals::dispatcher.sink<protocol::EntitySound>().connect<&on_entity_sound_packet>();
 }

@@ -2,7 +2,6 @@
 #include "client/precompiled.hh"
 #include "client/receive.hh"
 
-#include "shared/entity/factory.hh"
 #include "shared/entity/head.hh"
 #include "shared/entity/player.hh"
 #include "shared/entity/transform.hh"
@@ -12,8 +11,12 @@
 
 #include "shared/protocol.hh"
 
+#include "client/entity/factory.hh"
+
 #include "client/gui/chat.hh"
 #include "client/gui/gui_screen.hh"
+
+#include "client/sound/sound.hh"
 
 #include "client/globals.hh"
 #include "client/session.hh"
@@ -109,7 +112,7 @@ static void on_entity_player_packet(const protocol::EntityPlayer &packet)
     if(session::peer) {
         if(!synchronize_entity(packet.entity))
             static_cast<void>(globals::registry.create(packet.entity));
-        entity_factory::create_player(packet.entity, true, WorldCoord());
+        client_entity_factory::create_player(packet.entity);
     }
 }
 
@@ -118,7 +121,7 @@ static void on_spawn_player_packet(const protocol::SpawnPlayer &packet)
     if(session::peer) {
         if(!synchronize_entity(packet.entity))
             return;
-        entity_factory::create_player(packet.entity, true, WorldCoord());
+        client_entity_factory::create_player(packet.entity);
 
         globals::player = packet.entity;
         globals::gui_screen = GUI_SCREEN_NONE;
@@ -136,6 +139,16 @@ static void on_remove_entity_packet(const protocol::RemoveEntity &packet)
     }
 }
 
+static void on_generic_sound_packet(const protocol::GenericSound &packet)
+{
+    sound::play_generic(packet.sound, packet.looping, packet.pitch, packet.gain);
+}
+
+static void on_entity_sound_packet(const protocol::EntitySound &packet)
+{
+    sound::play_entity(packet.entity, packet.sound, packet.looping, packet.pitch, packet.gain);
+}
+
 void client_receive::init(void)
 {
     globals::dispatcher.sink<protocol::ChunkVoxels>().connect<&on_chunk_voxels_packet>();
@@ -145,4 +158,6 @@ void client_receive::init(void)
     globals::dispatcher.sink<protocol::EntityPlayer>().connect<&on_entity_player_packet>();
     globals::dispatcher.sink<protocol::SpawnPlayer>().connect<&on_spawn_player_packet>();
     globals::dispatcher.sink<protocol::RemoveEntity>().connect<&on_remove_entity_packet>();
+    globals::dispatcher.sink<protocol::GenericSound>().connect<&on_generic_sound_packet>();
+    globals::dispatcher.sink<protocol::EntitySound>().connect<&on_entity_sound_packet>();
 }

@@ -247,6 +247,29 @@ void protocol::send(ENetPeer *peer, ENetHost *host, const protocol::RequestChunk
     basic_send(peer, host, enet_packet_create(write_buffer.vector.data(), write_buffer.vector.size(), ENET_PACKET_FLAG_RELIABLE));
 }
 
+void protocol::send(ENetPeer *peer, ENetHost *host, const protocol::GenericSound &packet)
+{
+    PacketBuffer::setup(write_buffer);
+    PacketBuffer::write_UI16(write_buffer, protocol::GenericSound::ID);
+    PacketBuffer::write_string(write_buffer, packet.sound.substr(0, protocol::MAX_SOUNDNAME));
+    PacketBuffer::write_UI8(write_buffer, packet.looping);
+    PacketBuffer::write_FP32(write_buffer, packet.pitch);
+    PacketBuffer::write_FP32(write_buffer, packet.gain);
+    basic_send(peer, host, enet_packet_create(write_buffer.vector.data(), write_buffer.vector.size(), ENET_PACKET_FLAG_RELIABLE));
+}
+
+void protocol::send(ENetPeer *peer, ENetHost *host, const protocol::EntitySound &packet)
+{
+    PacketBuffer::setup(write_buffer);
+    PacketBuffer::write_UI16(write_buffer, protocol::EntitySound::ID);
+    PacketBuffer::write_UI64(write_buffer, static_cast<std::uint64_t>(packet.entity));
+    PacketBuffer::write_string(write_buffer, packet.sound.substr(0, protocol::MAX_SOUNDNAME));
+    PacketBuffer::write_UI8(write_buffer, packet.looping);
+    PacketBuffer::write_FP32(write_buffer, packet.pitch);
+    PacketBuffer::write_FP32(write_buffer, packet.gain);
+    basic_send(peer, host, enet_packet_create(write_buffer.vector.data(), write_buffer.vector.size(), ENET_PACKET_FLAG_RELIABLE));
+}
+
 void protocol::receive(const ENetPacket *packet, ENetPeer *peer)
 {
     PacketBuffer::setup(read_buffer, packet->data, packet->dataLength);
@@ -267,8 +290,12 @@ void protocol::receive(const ENetPacket *packet, ENetPeer *peer)
     protocol::EntityPlayer entity_player = {};
     protocol::PlayerListUpdate player_list_update = {};
     protocol::RequestChunk request_chunk = {};
+    protocol::GenericSound generic_sound = {};
+    protocol::EntitySound entity_sound = {};
     
-    switch(PacketBuffer::read_UI16(read_buffer)) {
+    auto id = PacketBuffer::read_UI16(read_buffer);
+    
+    switch(id) {
         case protocol::StatusRequest::ID:
             status_request.peer = peer;
             status_request.version = PacketBuffer::read_UI32(read_buffer);
@@ -389,6 +416,23 @@ void protocol::receive(const ENetPacket *packet, ENetPeer *peer)
             request_chunk.coord[1] = PacketBuffer::read_UI32(read_buffer);
             request_chunk.coord[2] = PacketBuffer::read_UI32(read_buffer);
             globals::dispatcher.trigger(request_chunk);
+            break;
+        case protocol::GenericSound::ID:
+            generic_sound.peer = peer;
+            generic_sound.sound = PacketBuffer::read_string(read_buffer);
+            generic_sound.looping = PacketBuffer::read_UI8(read_buffer);
+            generic_sound.pitch = PacketBuffer::read_FP32(read_buffer);
+            generic_sound.gain = PacketBuffer::read_FP32(read_buffer);
+            globals::dispatcher.trigger(generic_sound);
+            break;
+        case protocol::EntitySound::ID:
+            entity_sound.peer = peer;
+            entity_sound.entity = static_cast<entt::entity>(PacketBuffer::read_UI64(read_buffer));
+            entity_sound.sound = PacketBuffer::read_string(read_buffer);
+            entity_sound.looping = PacketBuffer::read_UI8(read_buffer);
+            entity_sound.pitch = PacketBuffer::read_FP32(read_buffer);
+            entity_sound.gain = PacketBuffer::read_FP32(read_buffer);
+            globals::dispatcher.trigger(entity_sound);
             break;
     }
 }

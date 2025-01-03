@@ -9,38 +9,29 @@ static emhash8::HashMap<std::string, std::shared_ptr<const BinaryFile>> file_map
 
 
 template<>
-std::shared_ptr<const BinaryFile> resource::load<BinaryFile>(const std::string &path, unsigned int load_flags)
+std::shared_ptr<const BinaryFile> resource::load<BinaryFile>(const std::string &name, unsigned int load_flags)
 {
-    const auto it = file_map.find(path);
+    const auto it = file_map.find(name);
     if(it != file_map.cend()) {
-        spdlog::warn("binary_file: {} is already loaded", path);
         return it->second;
     }
 
-    PHYSFS_File *file = PHYSFS_openRead(path.c_str());
+    PHYSFS_File *file = PHYSFS_openRead(name.c_str());
 
     if(!file) {
-        spdlog::warn("binary_file: {}: {}", path, fstools::error());
+        spdlog::warn("binary_file: {}: {}", name, fstools::error());
         return nullptr;
     }
 
     auto new_file = std::make_shared<BinaryFile>();
+    new_file->name = std::string(name);
     new_file->length = PHYSFS_fileLength(file);
     new_file->buffer = new std::uint8_t[new_file->length];
 
     PHYSFS_readBytes(file, new_file->buffer, new_file->length);
     PHYSFS_close(file);
 
-    return file_map.insert_or_assign(path, new_file).first->second;
-}
-
-template<>
-std::shared_ptr<const BinaryFile> resource::find<BinaryFile>(const std::string &path)
-{
-    const auto it = file_map.find(path);
-    if(it != file_map.cend())
-        return it->second;
-    return nullptr;
+    return file_map.insert_or_assign(name, new_file).first->second;
 }
 
 template<>

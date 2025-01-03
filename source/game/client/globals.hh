@@ -49,4 +49,7 @@ extern ImFont *font_chat;
 extern int *gui_keybind_ptr;
 extern unsigned int gui_scale;
 extern unsigned int gui_screen;
+
+extern ALCdevice *sound_dev;
+extern ALCcontext *sound_ctx;
 } // namespace globals

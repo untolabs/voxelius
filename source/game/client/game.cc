@@ -32,6 +32,7 @@
 #include "client/entity/player_look.hh"
 #include "client/entity/player_move.hh"
 #include "client/entity/player_target.hh"
+#include "client/entity/sound_emitter.hh"
 
 #include "client/event/glfw_framebuffer_size.hh"
 
@@ -53,6 +54,9 @@
 #include "client/hud/status_lines.hh"
 
 #include "client/resource/texture2D.hh"
+
+#include "client/sound/listener.hh"
+#include "client/sound/sound.hh"
 
 #include "client/world/chunk_mesher.hh"
 #include "client/world/chunk_renderer.hh"
@@ -337,11 +341,15 @@ void client_game::init(void)
     globals::gui_scale = 0U;
     globals::gui_screen = GUI_MAIN_MENU;
 
+    sound::init();
+
     globals::dispatcher.sink<GlfwFramebufferSizeEvent>().connect<&on_glfw_framebuffer_size>();
 }
 
 void client_game::init_late(void)
 {
+    sound::init_late();
+
     language::init_late();
 
     settings::init_late();
@@ -398,7 +406,11 @@ void client_game::init_late(void)
 
 void client_game::deinit(void)
 {
+    player_move::deinit();
+
     session::deinit();
+
+    sound::deinit();
 
     hotbar::deinit();
 
@@ -469,6 +481,10 @@ void client_game::update(void)
 {
     session::sp::update();
 
+    sound::update();
+
+    listener::update();
+
 #if ENABLE_EXPERIMENTS
     experiments::update();
 #endif /* ENABLE_EXPERIMENTS */
@@ -478,6 +494,8 @@ void client_game::update(void)
     player_target::update();
 
     view::update();
+
+    SoundEmitterComponent::update();
 
     voxel_anims::update();
 
@@ -534,6 +552,8 @@ void client_game::render(void)
     chunk_renderer::render();
 
     player_target::render();
+
+    sound::render();
 
 #if ENABLE_EXPERIMENTS
     const auto group = globals::registry.group(entt::get<PlayerComponent, CollisionComponent, HeadComponentIntr, TransformComponentIntr>);

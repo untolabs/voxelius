@@ -5,7 +5,6 @@
 #include "common/config.hh"
 #include "common/crc64.hh"
 
-#include "shared/entity/factory.hh"
 #include "shared/entity/head.hh"
 #include "shared/entity/player.hh"
 #include "shared/entity/transform.hh"
@@ -25,6 +24,8 @@
 #include "shared/worldgen/worldgen.hh"
 
 #include "shared/protocol.hh"
+
+#include "client/entity/factory.hh"
 
 #include "client/gui/chat.hh"
 #include "client/gui/gui_screen.hh"
@@ -336,7 +337,7 @@ void session::sp::load_world(const std::string &universe_directory)
 
     globals::player = globals::registry.create();
 
-    entity_factory::create_player(globals::player, true, WorldCoord());
+    client_entity_factory::create_player(globals::player);
 
     set_fixed_tickrate(protocol::TICKRATE);
 

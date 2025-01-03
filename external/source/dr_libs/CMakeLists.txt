@@ -1,0 +1,6 @@
+add_library(dr_libs STATIC "${CMAKE_CURRENT_LIST_DIR}/dr_impl.c")
+target_compile_definitions(dr_libs PRIVATE _CRT_SECURE_NO_WARNINGS)
+target_compile_definitions(dr_libs PUBLIC DR_WAV_NO_STDIO DR_WAV_NO_WCHAR)
+target_compile_definitions(dr_libs PUBLIC DR_MP3_NO_STDIO)
+target_include_directories(dr_libs PUBLIC "${EXTERNAL_INCLUDE_DIR}")
+set_target_properties(dr_libs PROPERTIES FOLDER External)

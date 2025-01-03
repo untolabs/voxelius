@@ -9,7 +9,7 @@ constexpr static unsigned int TEXTURE2D_LOAD_LINEAR_MAG = 0x0004;
 constexpr static unsigned int TEXTURE2D_LOAD_LINEAR_MIN = 0x0008;
 constexpr static unsigned int TEXTURE2D_LOAD_VFLIP      = 0x0010;
 
-struct Texture2D final {
+struct Texture2D final : public Resource {
     ImTextureID imgui;
     GLuint handle;
     int height;

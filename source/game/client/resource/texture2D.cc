@@ -8,12 +8,11 @@
 static emhash8::HashMap<std::string, std::shared_ptr<const Texture2D>> texture_map = {};
 
 template<>
-std::shared_ptr<const Texture2D> resource::load<Texture2D>(const std::string &path, unsigned int load_flags)
+std::shared_ptr<const Texture2D> resource::load<Texture2D>(const std::string &name, unsigned int load_flags)
 {
-    const auto it = texture_map.find(path);
+    const auto it = texture_map.find(name);
 
     if(it != texture_map.cend()) {
-        spdlog::warn("Texture2D: {} is already loaded", path);
         return it->second;
     }
 
@@ -22,8 +21,9 @@ std::shared_ptr<const Texture2D> resource::load<Texture2D>(const std::string &pa
         image_load_flags = IMAGE_LOAD_VFLIP;
     else image_load_flags = 0U;
 
-    if(auto image = resource::load<Image>(path, image_load_flags)) {
+    if(auto image = resource::load<Image>(name, image_load_flags)) {
         auto new_texture = std::make_shared<Texture2D>();
+        new_texture->name = std::string(name);
 
         glGenTextures(1, &new_texture->handle);
         glBindTexture(GL_TEXTURE_2D, new_texture->handle);
@@ -49,18 +49,9 @@ std::shared_ptr<const Texture2D> resource::load<Texture2D>(const std::string &pa
         new_texture->height = image->height;
         new_texture->width = image->width;
 
-        return texture_map.insert_or_assign(path, new_texture).first->second;
+        return texture_map.insert_or_assign(name, new_texture).first->second;
     }
 
-    return nullptr;
-}
-
-template<>
-std::shared_ptr<const Texture2D> resource::find<Texture2D>(const std::string &path)
-{
-    const auto it = texture_map.find(path);
-    if(it != texture_map.cend())
-        return it->second;
     return nullptr;
 }
 

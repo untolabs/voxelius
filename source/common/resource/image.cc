@@ -8,18 +8,17 @@
 static emhash8::HashMap<std::string, std::shared_ptr<const Image>> image_map = {};
 
 template<>
-std::shared_ptr<const Image> resource::load<Image>(const std::string &path, unsigned int load_flags)
+std::shared_ptr<const Image> resource::load<Image>(const std::string &name, unsigned int load_flags)
 {
-    const auto it = image_map.find(path);
+    const auto it = image_map.find(name);
     if(it != image_map.cend()) {
-        spdlog::warn("image: {} is already loaded", path);
         return it->second;
     }
 
     std::vector<std::uint8_t> buffer = {};
 
-    if(!fstools::read_bytes(path, buffer)) {
-        spdlog::warn("image: {}: {}", path, fstools::error());
+    if(!fstools::read_bytes(name, buffer)) {
+        spdlog::warn("image: {}: {}", name, fstools::error());
         return nullptr;
     }
 
@@ -28,32 +27,24 @@ std::shared_ptr<const Image> resource::load<Image>(const std::string &path, unsi
     else stbi_set_flip_vertically_on_load(false);
 
     auto new_image = std::make_shared<Image>();
+    new_image->name = std::string(name);
 
     if(load_flags & IMAGE_LOAD_GRAYSCALE)
         new_image->pixels = stbi_load_from_memory(buffer.data(), buffer.size(), &new_image->width, &new_image->height, nullptr, STBI_grey);
     else new_image->pixels = stbi_load_from_memory(buffer.data(), buffer.size(), &new_image->width, &new_image->height, nullptr, STBI_rgb_alpha);
 
     if(!new_image->pixels) {
-        spdlog::warn("image: {}: stbi_load failed", path);
+        spdlog::warn("image: {}: stbi_load failed", name);
         return nullptr;
     }
 
     if(!new_image->width || !new_image->height) {
-        spdlog::warn("image: {}: non-valid image dimensions", path);
+        spdlog::warn("image: {}: non-valid image dimensions", name);
         stbi_image_free(new_image->pixels);
         return nullptr;
     }
 
-    return image_map.insert_or_assign(path, new_image).first->second;
-}
-
-template<>
-std::shared_ptr<const Image> resource::find<Image>(const std::string &path)
-{
-    const auto it = image_map.find(path);
-    if(it != image_map.cend())
-        return it->second;
-    return nullptr;
+    return image_map.insert_or_assign(name, new_image).first->second;
 }
 
 template<>

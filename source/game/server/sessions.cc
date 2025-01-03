@@ -100,7 +100,7 @@ static void on_login_request_packet(const protocol::LoginRequest &packet)
         }
 
         session->player_entity = globals::registry.create();
-        entity_factory::create_player(session->player_entity, false, WorldCoord());
+        shared_entity_factory::create_player(session->player_entity);
 
         // The player entity is to be spawned in the world the last;
         // We don't want to interact with the still not-loaded world!
@@ -272,7 +272,9 @@ Session *sessions::find(std::uint64_t client_identity)
 
 Session *sessions::find(ENetPeer *peer)
 {
-    return reinterpret_cast<Session *>(peer->data);
+    if(peer != nullptr)
+        return reinterpret_cast<Session *>(peer->data);
+    return nullptr;
 }
 
 void sessions::destroy(Session *session)

@@ -11,6 +11,7 @@ constexpr static float PMOVE_FRICTION_GROUND = 10.0f;
 namespace player_move
 {
 void init(void);
+void deinit(void);
 void fixed_update(void);
 } // namespace player_move
 

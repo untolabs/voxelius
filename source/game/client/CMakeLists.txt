@@ -1,5 +1,7 @@
 if(BUILD_CLIENT)
     add_executable(vclient
+        "${CMAKE_CURRENT_LIST_DIR}/entity/factory.cc"
+        "${CMAKE_CURRENT_LIST_DIR}/entity/factory.hh"
         "${CMAKE_CURRENT_LIST_DIR}/entity/interpolation.cc"
         "${CMAKE_CURRENT_LIST_DIR}/entity/interpolation.hh"
         "${CMAKE_CURRENT_LIST_DIR}/entity/player_look.cc"
@@ -8,6 +10,8 @@ if(BUILD_CLIENT)
         "${CMAKE_CURRENT_LIST_DIR}/entity/player_move.hh"
         "${CMAKE_CURRENT_LIST_DIR}/entity/player_target.cc"
         "${CMAKE_CURRENT_LIST_DIR}/entity/player_target.hh"
+        "${CMAKE_CURRENT_LIST_DIR}/entity/sound_emitter.cc"
+        "${CMAKE_CURRENT_LIST_DIR}/entity/sound_emitter.hh"
         "${CMAKE_CURRENT_LIST_DIR}/event/glfw_cursor_pos.hh"
         "${CMAKE_CURRENT_LIST_DIR}/event/glfw_framebuffer_size.hh"
         "${CMAKE_CURRENT_LIST_DIR}/event/glfw_key.hh"
@@ -45,8 +49,14 @@ if(BUILD_CLIENT)
         "${CMAKE_CURRENT_LIST_DIR}/hud/metrics.hh"
         "${CMAKE_CURRENT_LIST_DIR}/hud/status_lines.cc"
         "${CMAKE_CURRENT_LIST_DIR}/hud/status_lines.hh"
+        "${CMAKE_CURRENT_LIST_DIR}/resource/sound_effect.cc"
+        "${CMAKE_CURRENT_LIST_DIR}/resource/sound_effect.hh"
         "${CMAKE_CURRENT_LIST_DIR}/resource/texture2D.cc"
         "${CMAKE_CURRENT_LIST_DIR}/resource/texture2D.hh"
+        "${CMAKE_CURRENT_LIST_DIR}/sound/listener.cc"
+        "${CMAKE_CURRENT_LIST_DIR}/sound/listener.hh"
+        "${CMAKE_CURRENT_LIST_DIR}/sound/sound.cc"
+        "${CMAKE_CURRENT_LIST_DIR}/sound/sound.hh"
         "${CMAKE_CURRENT_LIST_DIR}/world/chunk_mesher.cc"
         "${CMAKE_CURRENT_LIST_DIR}/world/chunk_mesher.hh"
         "${CMAKE_CURRENT_LIST_DIR}/world/chunk_quad.hh"
@@ -98,7 +108,7 @@ if(BUILD_CLIENT)
 
     target_include_directories(vclient PUBLIC "${EXTERNAL_INCLUDE_DIR}")
     target_link_directories(vclient PUBLIC "${EXTERNAL_LIBRARY_DIR}")
-    target_link_libraries(vclient PUBLIC glad glfw3 imgui imgui_glfw imgui_opengl3)
+    target_link_libraries(vclient PUBLIC dr_libs glad glfw3 imgui imgui_glfw imgui_opengl3 salad)
 
     if(WIN32 AND MSVC)
         # GLFW defines APIENTRY and ENet includes

@@ -46,6 +46,15 @@ WorldCoord ChunkCoord::to_world(const ChunkCoord &cvec)
     return result;
 }
 
+Vec3f ChunkCoord::to_vec3f(const ChunkCoord &pivot, const WorldCoord &offset)
+{
+    Vec3f result = {};
+    result[0] = static_cast<float>((offset.chunk[0] - pivot[0]) << CHUNK_SIZE_LOG2) + offset.local[0];
+    result[1] = static_cast<float>((offset.chunk[1] - pivot[1]) << CHUNK_SIZE_LOG2) + offset.local[1];
+    result[2] = static_cast<float>((offset.chunk[2] - pivot[2]) << CHUNK_SIZE_LOG2) + offset.local[2];
+    return result;
+}
+
 Vec3f ChunkCoord::to_vec3f(const ChunkCoord &cvec)
 {
     Vec3f result = {};

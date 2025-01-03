@@ -42,3 +42,6 @@ ImFont *globals::font_chat = nullptr;
 int *globals::gui_keybind_ptr = nullptr;
 unsigned int globals::gui_scale = 0U;
 unsigned int globals::gui_screen = GUI_SCREEN_NONE;
+
+ALCdevice *globals::sound_dev = nullptr;
+ALCcontext *globals::sound_ctx = nullptr;

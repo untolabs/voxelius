@@ -20,6 +20,10 @@
 
 #include "client/hud/status_lines.hh"
 
+#include "client/resource/sound_effect.hh"
+
+#include "client/sound/sound.hh"
+
 #include "client/globals.hh"
 
 
@@ -29,6 +33,8 @@ static float prev_speed_xz = 0.0f;
 static bool enable_speedometer = true;
 static Vec3f pmove_wish_dir = Vec3f::zero();
 static std::uint64_t next_jump = UINT64_C(0);
+
+static std::shared_ptr<const SoundEffect> sfx_jump = nullptr;
 
 static Vec3f accelerate(const Vec3f &wish_dir, const Vec3f &velocity, float wish_speed, float accel)
 {
@@ -71,6 +77,13 @@ void player_move::init(void)
 
     Config::add(globals::client_config, "player_move.enable_speedometer", enable_speedometer);
     settings::add_checkbox(2, settings::VIDEO_GUI, "player_move.enable_speedometer", enable_speedometer, true);
+
+    sfx_jump = resource::load<SoundEffect>("sounds/jump.wav");
+}
+
+void player_move::deinit(void)
+{
+    sfx_jump = nullptr;
 }
 
 void player_move::fixed_update(void)
@@ -127,9 +140,9 @@ void player_move::fixed_update(void)
     if(is_grounded && (pmove_wish_dir.get_y() > 0.0f) && (globals::curtime >= next_jump)) {
         velocity.linear.set_y(GravityComponent::acceleration * 0.275f);
 
-        const auto new_speed_xz = Vec2f::length(Vec2f(velocity.linear.get_x(), velocity.linear.get_z()));
-        const auto new_speed_text = fmt::format("{:.02f} M/S", new_speed_xz);
-        const auto speed_change_xz = new_speed_xz - prev_speed_xz;
+        auto new_speed_xz = Vec2f::length(Vec2f(velocity.linear.get_x(), velocity.linear.get_z()));
+        auto new_speed_text = fmt::format("{:.02f} M/S", new_speed_xz);
+        auto speed_change_xz = new_speed_xz - prev_speed_xz;
 
         prev_speed_xz = new_speed_xz;
         next_jump = globals::curtime + JUMP_COOLDOWN;
@@ -150,6 +163,10 @@ void player_move::fixed_update(void)
                 // speeding up; use the green color for the status line
                 status_lines::set(STATUS_DEBUG, new_speed_text, Vec4f::green(), 1.0f);
             }
+        }
+
+        if(sfx_jump != nullptr) {
+            sound::play_player(sfx_jump->name, false, 1.0f, 1.0f);
         }
     }
 }

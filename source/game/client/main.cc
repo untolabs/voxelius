@@ -22,6 +22,7 @@
 #include "client/event/glfw_mouse_button.hh"
 #include "client/event/glfw_scroll.hh"
 
+#include "client/resource/sound_effect.hh"
 #include "client/resource/texture2D.hh"
 
 #include "client/const.hh"
@@ -228,6 +229,29 @@ int main(int argc, char **argv)
     spdlog::info("opengl: version: {}", reinterpret_cast<const char *>(glGetString(GL_VERSION)));
     spdlog::info("opengl: renderer: {}", reinterpret_cast<const char *>(glGetString(GL_RENDERER)));
 
+    if(!saladLoadALdefault()) {
+        spdlog::critical("salad: failed to load function pointers");
+        std::terminate();
+    }
+
+    globals::sound_dev = alcOpenDevice(nullptr);
+
+    if(globals::sound_dev == nullptr) {
+        spdlog::critical("openal: alcOpenDevice failed");
+        std::terminate();
+    }
+
+    spdlog::info("sound: {}", reinterpret_cast<const char *>(alcGetString(globals::sound_dev, ALC_DEVICE_SPECIFIER)));
+
+    globals::sound_ctx = alcCreateContext(globals::sound_dev, nullptr);
+
+    if(globals::sound_ctx == nullptr) {
+        spdlog::critical("openal: alcCreateContext failed");
+        std::terminate();
+    }
+
+    alcMakeContextCurrent(globals::sound_ctx);
+
     motd::init("motds/client.txt");
 
     const std::string title = fmt::format("Voxelius {}: {}", PROJECT_VERSION_STRING, motd::get());
@@ -368,6 +392,7 @@ int main(int argc, char **argv)
         resource::soft_cleanup<BinaryFile>();
         resource::soft_cleanup<Image>();
 
+        resource::soft_cleanup<SoundEffect>();
         resource::soft_cleanup<Texture2D>();
     }
 
@@ -376,6 +401,7 @@ int main(int argc, char **argv)
     resource::hard_cleanup<BinaryFile>();
     resource::hard_cleanup<Image>();
 
+    resource::hard_cleanup<SoundEffect>();
     resource::hard_cleanup<Texture2D>();
 
     spdlog::info("client: shutdown after {} frames", globals::window_framecount);
@@ -385,6 +411,10 @@ int main(int argc, char **argv)
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+
+    alcMakeContextCurrent(nullptr);
+    alcDestroyContext(globals::sound_ctx);
+    alcCloseDevice(globals::sound_dev);
 
     glfwDestroyWindow(globals::window);
     glfwTerminate();

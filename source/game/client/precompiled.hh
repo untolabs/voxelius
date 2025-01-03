@@ -26,7 +26,14 @@
 #include <utility>
 #include <vector>
 
+#include <AL/al.h>
+#include <AL/alc.h>
+#include <AL/salad.h>
+
 #include <BS_thread_pool.hpp>
+
+#include <dr_mp3.h>
+#include <dr_wav.h>
 
 // FIXME: including hash_set8.hpp is fucked up whenever
 // hash_table8.hpp is included. It doesn't even compile

@@ -8,9 +8,10 @@ namespace protocol
 {
 constexpr static std::size_t MAX_CHAT = 16384;
 constexpr static std::size_t MAX_USERNAME = 64;
+constexpr static std::size_t MAX_SOUNDNAME = 1024;
 constexpr static std::uint16_t TICKRATE = 60;
 constexpr static std::uint16_t PORT = 43103;
-constexpr static std::uint32_t VERSION = 13;
+constexpr static std::uint32_t VERSION = 14;
 } // namespace protocol
 
 namespace protocol
@@ -41,6 +42,8 @@ struct RemoveEntity;
 struct EntityPlayer;
 struct PlayerListUpdate;
 struct RequestChunk;
+struct GenericSound;
+struct EntitySound;
 } // namespace protocol
 
 namespace protocol
@@ -61,6 +64,8 @@ void send(ENetPeer *peer, ENetHost *host, const RemoveEntity &packet);
 void send(ENetPeer *peer, ENetHost *host, const EntityPlayer &packet);
 void send(ENetPeer *peer, ENetHost *host, const PlayerListUpdate &packet);
 void send(ENetPeer *peer, ENetHost *host, const RequestChunk &packet);
+void send(ENetPeer *peer, ENetHost *host, const GenericSound &packet);
+void send(ENetPeer *peer, ENetHost *host, const EntitySound &packet);
 } // namespace protocol
 
 namespace protocol
@@ -175,4 +180,19 @@ struct protocol::PlayerListUpdate final : public protocol::Base<0x000E> {
 
 struct protocol::RequestChunk final : public protocol::Base<0x000F> {
     ChunkCoord coord {};
+};
+
+struct protocol::GenericSound final : public protocol::Base<0x0010> {
+    std::string sound {};
+    bool looping {};
+    float pitch {};
+    float gain {};
+};
+
+struct protocol::EntitySound final : public protocol::Base<0x0011> {
+    entt::entity entity {};
+    std::string sound {};
+    bool looping {};
+    float pitch {};
+    float gain {};
 };

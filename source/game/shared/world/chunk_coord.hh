@@ -19,6 +19,7 @@ public:
     static WorldCoord to_world(const ChunkCoord &cvec, const Vec3f &lvec);
     static WorldCoord to_world(const ChunkCoord &cvec, const LocalCoord &lvec);
     static WorldCoord to_world(const ChunkCoord &cvec);
+    static Vec3f to_vec3f(const ChunkCoord &pivot, const WorldCoord &offset);
     static Vec3f to_vec3f(const ChunkCoord &cvec);
 };
 
