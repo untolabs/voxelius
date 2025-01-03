@@ -186,7 +186,6 @@ struct protocol::GenericSound final : public protocol::Base<0x0010> {
     std::string sound {};
     bool looping {};
     float pitch {};
-    float gain {};
 };
 
 struct protocol::EntitySound final : public protocol::Base<0x0011> {
@@ -194,5 +193,4 @@ struct protocol::EntitySound final : public protocol::Base<0x0011> {
     std::string sound {};
     bool looping {};
     float pitch {};
-    float gain {};
 };

@@ -118,7 +118,6 @@ static void on_entity_sound_packet(const protocol::EntitySound &packet)
         response.sound = packet.sound;
         response.looping = packet.looping;
         response.pitch = packet.pitch;
-        response.gain = packet.gain;
         protocol::send(packet.peer, globals::server_host, response);
     }
 }

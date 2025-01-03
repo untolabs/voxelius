@@ -77,6 +77,10 @@ void sound::update(void)
     sound::master_volume = cxpr::clamp(sound::master_volume, 0.0f, 100.0f);
     sound::effects_volume = cxpr::clamp(sound::effects_volume, 0.0f, 100.0f);
     sound::music_volume = cxpr::clamp(sound::music_volume, 0.0f, 100.0f);
+
+    auto effects_gain = 0.01f * sound::effects_volume;
+    alSourcef(generic_source, AL_GAIN, effects_gain);
+    alSourcef(player_source, AL_GAIN, effects_gain);
 }
 
 void sound::render(void)
@@ -84,7 +88,7 @@ void sound::render(void)
 
 }
 
-void sound::play_generic(const std::string &sound, bool looping, float pitch, float gain)
+void sound::play_generic(const std::string &sound, bool looping, float pitch)
 {
     if(sound.empty()) {
         alSourceRewind(generic_source);
@@ -102,11 +106,10 @@ void sound::play_generic(const std::string &sound, bool looping, float pitch, fl
     alSourcei(generic_source, AL_BUFFER, generic_sound->buffer);
     alSourcei(generic_source, AL_LOOPING, looping);
     alSourcef(generic_source, AL_PITCH, cxpr::clamp(pitch, 0.0625f, 10.0f));
-    alSourcef(generic_source, AL_GAIN, cxpr::clamp(gain, 0.0625f, 1.0f));
     alSourcePlay(generic_source);
 }
 
-void sound::play_entity(entt::entity entity, const std::string &sound, bool looping, float pitch, float gain)
+void sound::play_entity(entt::entity entity, const std::string &sound, bool looping, float pitch)
 {
     if(globals::registry.valid(entity)) {
         if(auto emitter = globals::registry.try_get<SoundEmitterComponent>(entity)) {
@@ -126,13 +129,12 @@ void sound::play_entity(entt::entity entity, const std::string &sound, bool loop
             alSourcei(emitter->source, AL_BUFFER, emitter->sound->buffer);
             alSourcei(emitter->source, AL_LOOPING, looping);
             alSourcef(emitter->source, AL_PITCH, cxpr::clamp(pitch, 0.0625f, 10.0f));
-            alSourcef(emitter->source, AL_GAIN, cxpr::clamp(gain, 0.0625f, 1.0f));
             alSourcePlay(emitter->source);
         }
     }
 }
 
-void sound::play_player(const std::string &sound, bool looping, float pitch, float gain)
+void sound::play_player(const std::string &sound, bool looping, float pitch)
 {
     if(session::peer && globals::registry.valid(globals::player)) {
         protocol::EntitySound packet = {};
@@ -140,7 +142,6 @@ void sound::play_player(const std::string &sound, bool looping, float pitch, flo
         packet.sound = std::string(sound);
         packet.looping = looping;
         packet.pitch = pitch;
-        packet.gain = gain;
 
         protocol::send(session::peer, nullptr, packet);
     }
@@ -161,6 +162,5 @@ void sound::play_player(const std::string &sound, bool looping, float pitch, flo
     alSourcei(generic_source, AL_BUFFER, generic_sound->buffer);
     alSourcei(generic_source, AL_LOOPING, looping);
     alSourcef(generic_source, AL_PITCH, cxpr::clamp(pitch, 0.0625f, 10.0f));
-    alSourcef(generic_source, AL_GAIN, cxpr::clamp(gain, 0.0625f, 1.0f));
     alSourcePlay(generic_source);
 }

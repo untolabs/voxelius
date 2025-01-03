@@ -19,7 +19,7 @@ void render(void);
 
 namespace sound
 {
-void play_generic(const std::string &sound, bool looping, float pitch, float gain);
-void play_entity(entt::entity entity, const std::string &sound, bool looping, float pitch, float gain);
-void play_player(const std::string &sound, bool looping, float pitch, float gain);
+void play_generic(const std::string &sound, bool looping, float pitch);
+void play_entity(entt::entity entity, const std::string &sound, bool looping, float pitch);
+void play_player(const std::string &sound, bool looping, float pitch);
 } // namespace sound

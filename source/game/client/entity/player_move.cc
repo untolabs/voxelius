@@ -166,7 +166,7 @@ void player_move::fixed_update(void)
         }
 
         if(sfx_jump != nullptr) {
-            sound::play_player(sfx_jump->name, false, 1.0f, 1.0f);
+            sound::play_player(sfx_jump->name, false, 1.0f);
         }
     }
 }

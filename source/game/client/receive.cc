@@ -141,12 +141,12 @@ static void on_remove_entity_packet(const protocol::RemoveEntity &packet)
 
 static void on_generic_sound_packet(const protocol::GenericSound &packet)
 {
-    sound::play_generic(packet.sound, packet.looping, packet.pitch, packet.gain);
+    sound::play_generic(packet.sound, packet.looping, packet.pitch);
 }
 
 static void on_entity_sound_packet(const protocol::EntitySound &packet)
 {
-    sound::play_entity(packet.entity, packet.sound, packet.looping, packet.pitch, packet.gain);
+    sound::play_entity(packet.entity, packet.sound, packet.looping, packet.pitch);
 }
 
 void client_receive::init(void)
